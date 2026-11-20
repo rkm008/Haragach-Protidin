@@ -1,0 +1,2746 @@
+<!DOCTYPE html>
+<html lang="bn" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>হারাগাছ প্রতিদিন — Pro News Photo Card Studio</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Complete Bangla & English Typography Suite (All Weights & Italics) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atma:wght@300;400;500;600;700&family=Galada&family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Mina:wght@400;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700;800;900&family=Noto+Serif+Bengali:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Poppins:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,400;1,700&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
+  
+  <!-- QRCode-Generator Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Hind Siliguri', 'sans-serif'],
+            bangla: ['Hind Siliguri', 'Noto Sans Bengali', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #090d16; }
+    ::-webkit-scrollbar-thumb { background: #26334d; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00f2ff; }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.14);
+      height: 5px;
+      border-radius: 999px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #00f2ff;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(0, 242, 255, 0.65);
+      border: 2px solid #070b14;
+    }
+
+    .studio-bg {
+      background-color: #060911;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(0, 242, 255, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(220, 38, 38, 0.09) 0px, transparent 50%);
+    }
+
+    .checkerboard {
+      background-image: 
+        linear-gradient(45deg, #101624 25%, transparent 25%), 
+        linear-gradient(-45deg, #101624 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #101624 75%), 
+        linear-gradient(-45deg, transparent 75%, #101624 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    }
+  </style>
+</head>
+<body class="studio-bg text-slate-100 min-h-screen flex flex-col overflow-x-hidden selection:bg-cyan-400 selection:text-slate-950">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-slate-900/95 border border-cyan-400/50 text-white px-4 py-3 rounded-2xl shadow-2xl shadow-cyan-500/25 flex items-center gap-2.5 backdrop-blur-xl">
+      <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+      <span id="toast-msg" class="text-xs sm:text-sm font-medium">Action completed!</span>
+    </div>
+  </div>
+
+  <!-- Top Header Bar -->
+  <header class="border-b border-white/10 bg-slate-950/85 backdrop-blur-xl sticky top-0 z-40">
+    <div class="max-w-[1440px] mx-auto px-3 sm:px-5 h-14 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-cyan-500/25">
+          <i data-lucide="newspaper" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-xs sm:text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
+            <span>NewsCard Studio</span>
+            <span class="text-[10px] uppercase px-1.5 py-0.5 rounded-md bg-cyan-400/15 text-cyan-300 border border-cyan-400/30 font-semibold">PRO</span>
+          </h1>
+          <p class="text-[10px] text-slate-400 hidden sm:block font-bangla">হারাগাছ প্রতিদিন • কাস্টম ফটো কার্ড এডিটর</p>
+        </div>
+      </div>
+
+      <!-- Save/Load & Export Buttons -->
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <button id="btn-save-project" title="Save Template to Browser" class="p-2 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs flex items-center gap-1 transition">
+          <i data-lucide="save" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span class="hidden md:inline">Save</span>
+        </button>
+        <button id="btn-load-project" title="Load Saved Template" class="p-2 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs flex items-center gap-1 transition">
+          <i data-lucide="folder-open" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span class="hidden md:inline">Load</span>
+        </button>
+        <button id="btn-download-jpg" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white text-xs font-semibold flex items-center gap-1 transition active:scale-95">
+          <i data-lucide="image" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>JPG</span>
+        </button>
+        <button id="btn-download-png" class="px-3 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-400 to-sky-500 hover:from-cyan-300 hover:to-sky-400 text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-cyan-500/25 transition active:scale-95">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span>PNG</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 max-w-[1440px] w-full mx-auto flex flex-col lg:flex-row gap-4 p-2.5 sm:p-5">
+    
+    <!-- LEFT / TOP: Interactive Live Preview Stage -->
+    <section class="w-full lg:w-[50%] xl:w-[54%] flex flex-col">
+      <div class="w-full bg-slate-900/80 border border-white/10 rounded-3xl p-2.5 sm:p-4 backdrop-blur-xl shadow-2xl flex flex-col items-center sticky top-14 lg:top-16 z-30">
+        
+        <!-- Preview Status Bar -->
+        <div class="w-full flex items-center justify-between mb-2 px-1">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span id="dimension-badge" class="text-[11px] font-mono px-2 py-0.5 rounded-lg bg-white/5 text-cyan-300 border border-white/10">1080 × 1350 (4:5)</span>
+            <span id="selected-layer-badge" class="text-[10px] px-2 py-0.5 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-400/20 hidden sm:inline">Layer: Main Photo</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button type="button" id="btn-deselect" class="text-[10px] px-2 py-0.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400">Deselect</button>
+          </div>
+        </div>
+
+        <!-- Canvas Stage -->
+        <div id="preview-wrapper" class="w-full checkerboard rounded-2xl border border-white/10 flex items-center justify-center overflow-hidden p-2 relative" style="min-height: 260px; max-height: 52vh;">
+          <canvas id="card-canvas" class="shadow-2xl max-w-full max-h-[48vh] lg:max-h-[68vh] w-auto h-auto cursor-grab active:cursor-grabbing touch-none"></canvas>
+        </div>
+
+        <!-- Quick Action Strip under Canvas -->
+        <div class="w-full mt-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div class="flex items-center gap-1.5">
+            <label class="cursor-pointer px-2.5 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-300 font-semibold flex items-center gap-1.5 transition">
+              <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+              <span>Main Photo</span>
+              <input type="file" id="quick-photo-upload" accept="image/*" class="hidden" />
+            </label>
+            <label class="cursor-pointer px-2.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/30 text-amber-300 font-semibold flex items-center gap-1.5 transition">
+              <i data-lucide="image-plus" class="w-3.5 h-3.5"></i>
+              <span>+ Overlay Photo</span>
+              <input type="file" id="quick-overlay-upload" accept="image/*" class="hidden" />
+            </label>
+          </div>
+
+          <div class="flex items-center gap-1">
+            <button type="button" data-quick-ratio="4:5" class="quick-ratio-btn px-2 py-1 rounded-lg bg-cyan-400 text-slate-950 font-bold text-[10px]">4:5</button>
+            <button type="button" data-quick-ratio="1:1" class="quick-ratio-btn px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-[10px]">1:1</button>
+            <button type="button" data-quick-ratio="9:16" class="quick-ratio-btn px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-[10px]">9:16</button>
+            <button type="button" data-quick-ratio="16:9" class="quick-ratio-btn px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-[10px]">16:9</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT / BOTTOM: Comprehensive Customization Studio -->
+    <section class="w-full lg:w-[50%] xl:w-[46%] flex flex-col gap-3 pb-16">
+      
+      <!-- 6-Tab Studio Navigation -->
+      <div class="grid grid-cols-6 gap-1 p-1 bg-slate-900/95 border border-white/10 rounded-2xl backdrop-blur-xl sticky top-[315px] sm:top-[350px] lg:top-16 z-20 shadow-xl">
+        <button type="button" data-tab="style" class="tab-btn active flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-xl text-[10px] sm:text-[11px] font-bold bg-cyan-400 text-slate-950 transition">
+          <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+          <span>Material</span>
+        </button>
+        <button type="button" data-tab="corners" class="tab-btn flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-xl text-[10px] sm:text-[11px] font-medium text-slate-300 hover:bg-white/5 transition">
+          <i data-lucide="box-select" class="w-3.5 h-3.5"></i>
+          <span>Corners</span>
+        </button>
+        <button type="button" data-tab="photos" class="tab-btn flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-xl text-[10px] sm:text-[11px] font-medium text-slate-300 hover:bg-white/5 transition">
+          <i data-lucide="images" class="w-3.5 h-3.5"></i>
+          <span>Photos</span>
+        </button>
+        <button type="button" data-tab="qr" class="tab-btn flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-xl text-[10px] sm:text-[11px] font-medium text-slate-300 hover:bg-white/5 transition">
+          <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
+          <span>QR & Brand</span>
+        </button>
+        <button type="button" data-tab="text" class="tab-btn flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-xl text-[10px] sm:text-[11px] font-medium text-slate-300 hover:bg-white/5 transition">
+          <i data-lucide="type" class="w-3.5 h-3.5"></i>
+          <span>Fonts</span>
+        </button>
+        <button type="button" data-tab="colors" class="tab-btn flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-xl text-[10px] sm:text-[11px] font-medium text-slate-300 hover:bg-white/5 transition">
+          <i data-lucide="palette" class="w-3.5 h-3.5"></i>
+          <span>Colors</span>
+        </button>
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- TAB 1: CARD STYLES & MATERIALS (LIQUID GLASS, WOOD, ETC.) -->
+      <!-- ========================================================= -->
+      <div id="panel-style" class="tab-panel space-y-3.5">
+        <div class="bg-slate-900/80 border border-white/10 rounded-3xl p-4 backdrop-blur-xl space-y-3.5">
+          <h2 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
+            1. Card Material & Layout Style
+          </h2>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="template-grid">
+            <button type="button" data-template="liquid-glass" class="template-card active p-3 rounded-2xl border-2 border-cyan-400 bg-cyan-400/10 text-left transition">
+              <div class="text-xs font-bold text-white">Liquid Glass</div>
+              <div class="text-[10px] text-cyan-300 mt-0.5">Frosted Blur + Wave</div>
+            </button>
+            <button type="button" data-template="wooden" class="template-card p-3 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-left transition">
+              <div class="text-xs font-bold text-amber-300">Wooden Frame</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">Teak / Oak Grain</div>
+            </button>
+            <button type="button" data-template="editorial-fade" class="template-card p-3 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-left transition">
+              <div class="text-xs font-bold text-white">Editorial Fade</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">Smooth Vignette</div>
+            </button>
+            <button type="button" data-template="split-card" class="template-card p-3 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-left transition">
+              <div class="text-xs font-bold text-white">Split Card</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">Adjustable Split %</div>
+            </button>
+            <button type="button" data-template="minimal-paper" class="template-card p-3 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-left transition">
+              <div class="text-xs font-bold text-white">Newsprint Paper</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">Clean Light Editorial</div>
+            </button>
+            <button type="button" data-template="neon-dark" class="template-card p-3 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-left transition">
+              <div class="text-xs font-bold text-cyan-300">Neon Dark Glass</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">Glowing Cyber Rim</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Liquid Glass & Transparency Controls -->
+        <div id="glass-controls-box" class="bg-slate-900/80 border border-white/10 rounded-3xl p-4 backdrop-blur-xl space-y-3">
+          <h3 class="text-xs font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="droplets" class="w-3.5 h-3.5"></i>
+            Transparency & Liquid Glass Physics
+          </h3>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-300">Glass Transparency (Opacity)</span>
+                <span id="val-glass-opacity" class="text-cyan-400 font-mono">48%</span>
+              </div>
+              <input type="range" id="glass-opacity" min="0" max="100" value="48" class="w-full" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-300">Backdrop Frost Blur</span>
+                <span id="val-glass-blur" class="text-cyan-400 font-mono">24px</span>
+              </div>
+              <input type="range" id="glass-blur" min="0" max="45" value="24" class="w-full" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-300">Liquid Light Refraction Sheen</span>
+                <span id="val-glass-sheen" class="text-cyan-400 font-mono">75%</span>
+              </div>
+              <input type="range" id="glass-sheen" min="0" max="100" value="75" class="w-full" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-300">Glowing Glass Edge Border</span>
+                <span id="val-glass-edge" class="text-cyan-400 font-mono">2.5px</span>
+              </div>
+              <input type="range" id="glass-edge" min="0" max="8" step="0.5" value="2.5" class="w-full" />
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <label class="inline-flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+              <input type="checkbox" id="glass-wave" checked class="accent-cyan-400 w-4 h-4 rounded" />
+              <span>Specular Liquid Wave</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] text-slate-400">Split / Panel Height:</span>
+              <input type="range" id="panel-ratio" min="25" max="70" value="36" class="w-24" />
+              <span id="val-panel-ratio" class="text-[11px] font-mono text-cyan-400">36%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wooden Texture Engine Controls -->
+        <div id="wood-controls-box" class="bg-slate-900/80 border border-amber-500/25 rounded-3xl p-4 backdrop-blur-xl space-y-3">
+          <h3 class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="trees" class="w-3.5 h-3.5"></i>
+            Wooden Material & Grain Engine
+          </h3>
+
+          <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5" id="wood-tones">
+            <button type="button" data-wood="teak" class="wood-btn active p-2 rounded-xl border-2 border-amber-400 bg-[#7c4722] text-white text-[10px] font-bold text-center">Teak</button>
+            <button type="button" data-wood="mahogany" class="wood-btn p-2 rounded-xl border border-white/15 bg-[#581c1c] text-white text-[10px] font-bold text-center">Mahogany</button>
+            <button type="button" data-wood="oak" class="wood-btn p-2 rounded-xl border border-white/15 bg-[#b07d48] text-slate-950 text-[10px] font-bold text-center">Oak</button>
+            <button type="button" data-wood="walnut" class="wood-btn p-2 rounded-xl border border-white/15 bg-[#3e2723] text-white text-[10px] font-bold text-center">Walnut</button>
+            <button type="button" data-wood="bamboo" class="wood-btn p-2 rounded-xl border border-white/15 bg-[#c9a66b] text-slate-950 text-[10px] font-bold text-center">Bamboo</button>
+            <button type="button" data-wood="ebony" class="wood-btn p-2 rounded-xl border border-white/15 bg-[#1c1917] text-white text-[10px] font-bold text-center">Ebony</button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-300">Wood Grain Depth</span>
+                <span id="val-wood-grain" class="text-amber-300 font-mono">65%</span>
+              </div>
+              <input type="range" id="wood-grain" min="0" max="100" value="65" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-300">Varnish Gloss Polish</span>
+                <span id="val-wood-gloss" class="text-amber-300 font-mono">50%</span>
+              </div>
+              <input type="range" id="wood-gloss" min="0" max="100" value="50" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-300">Carved Frame Width</span>
+                <span id="val-wood-frame" class="text-amber-300 font-mono">28px</span>
+              </div>
+              <input type="range" id="wood-frame" min="0" max="80" value="28" class="w-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- TAB 2: ROUNDED CORNERS, ASPECT RATIO & GEOMETRY           -->
+      <!-- ========================================================= -->
+      <div id="panel-corners" class="tab-panel hidden space-y-3.5">
+        <!-- Independent & Linked Corner Radius Controls -->
+        <div class="bg-slate-900/80 border border-white/10 rounded-3xl p-4 backdrop-blur-xl space-y-3.5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="radius" class="w-4 h-4 text-cyan-400"></i>
+              Rounded Corner Customization (0–120px)
+            </h2>
+            <label class="inline-flex items-center gap-1.5 text-xs text-cyan-300 cursor-pointer font-semibold">
+              <input type="checkbox" id="link-corners" class="accent-cyan-400 w-4 h-4 rounded" />
+              <span>Link All</span>
+            </label>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300">Outer Card Corners</span>
+                <span id="val-r-outer" class="text-cyan-400 font-mono">28px</span>
+              </div>
+              <input type="range" id="r-outer" min="0" max="120" value="28" class="w-full" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300">Inner Photo Frame Corners</span>
+                <span id="val-r-photo" class="text-cyan-400 font-mono">24px</span>
+              </div>
+              <input type="range" id="r-photo" min="0" max="120" value="24" class="w-full" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300">Headline / Glass Panel Corners</span>
+                <span id="val-r-panel" class="text-cyan-400 font-mono">32px</span>
+              </div>
+              <input type="range" id="r-panel" min="0" max="120" value="32" class="w-full" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300">Category Badge / Date Pill Corners</span>
+                <span id="val-r-badge" class="text-cyan-400 font-mono">50px</span>
+              </div>
+              <input type="range" id="r-badge" min="0" max="120" value="50" class="w-full" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300">Sponsor Strip & QR Box Corners</span>
+                <span id="val-r-sponsor" class="text-cyan-400 font-mono">18px</span>
+              </div>
+              <input type="range" id="r-sponsor" min="0" max="120" value="18" class="w-full" />
+            </div>
+          </div>
+
+          <!-- Outer Padding, Border Thickness & Drop Shadow -->
+          <div class="grid grid-cols-3 gap-2.5 pt-2 border-t border-white/10">
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-400">Padding</span>
+                <span id="val-outer-pad" class="text-cyan-400 font-mono">0px</span>
+              </div>
+              <input type="range" id="outer-pad" min="0" max="80" value="0" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-400">Border</span>
+                <span id="val-border-width" class="text-cyan-400 font-mono">3px</span>
+              </div>
+              <input type="range" id="border-width" min="0" max="24" value="3" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-400">Shadow</span>
+                <span id="val-shadow-intensity" class="text-cyan-400 font-mono">45%</span>
+              </div>
+              <input type="range" id="shadow-intensity" min="0" max="100" value="45" class="w-full" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Aspect Ratio & Custom Pixel Dimensions -->
+        <div class="bg-slate-900/80 border border-white/10 rounded-3xl p-4 backdrop-blur-xl space-y-3">
+          <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="ratio" class="w-4 h-4 text-cyan-400"></i>
+            Aspect Ratio & Pixel Size
+          </h3>
+
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" data-w="1080" data-h="1350" data-label="4:5" class="ratio-preset-btn active p-2.5 rounded-xl border-2 border-cyan-400 bg-cyan-400/10 text-left">
+              <div class="text-xs font-bold text-white">4:5 Feed</div>
+              <div class="text-[10px] text-cyan-300 font-mono">1080×1350</div>
+            </button>
+            <button type="button" data-w="1080" data-h="1080" data-label="1:1" class="ratio-preset-btn p-2.5 rounded-xl border border-white/10 bg-white/5 text-left">
+              <div class="text-xs font-bold text-white">1:1 Square</div>
+              <div class="text-[10px] text-slate-400 font-mono">1080×1080</div>
+            </button>
+            <button type="button" data-w="1080" data-h="1920" data-label="9:16" class="ratio-preset-btn p-2.5 rounded-xl border border-white/10 bg-white/5 text-left">
+              <div class="text-xs font-bold text-white">9:16 Story</div>
+              <div class="text-[10px] text-slate-400 font-mono">1080×1920</div>
+            </button>
+            <button type="button" data-w="1920" data-h="1080" data-label="16:9" class="ratio-preset-btn p-2.5 rounded-xl border border-white/10 bg-white/5 text-left">
+              <div class="text-xs font-bold text-white">16:9 Wide</div>
+              <div class="text-[10px] text-slate-400 font-mono">1920×1080</div>
+            </button>
+            <button type="button" data-w="1080" data-h="1440" data-label="3:4" class="ratio-preset-btn p-2.5 rounded-xl border border-white/10 bg-white/5 text-left">
+              <div class="text-xs font-bold text-white">3:4 Classic</div>
+              <div class="text-[10px] text-slate-400 font-mono">1080×1440</div>
+            </button>
+            <button type="button" data-w="1000" data-h="1500" data-label="2:3" class="ratio-preset-btn p-2.5 rounded-xl border border-white/10 bg-white/5 text-left">
+              <div class="text-xs font-bold text-white">2:3 Poster</div>
+              <div class="text-[10px] text-slate-400 font-mono">1000×1500</div>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5 pt-1">
+            <div>
+              <label class="text-[10px] text-slate-400 block mb-1">Custom Width (400–2400px)</label>
+              <input type="number" id="custom-width" value="1080" min="400" max="2400" step="10" class="w-full bg-slate-950/90 border border-white/15 rounded-xl px-3 py-1.5 text-xs font-mono text-white" />
+            </div>
+            <div>
+              <label class="text-[10px] text-slate-400 block mb-1">Custom Height (400–2400px)</label>
+              <input type="number" id="custom-height" value="1350" min="400" max="2400" step="10" class="w-full bg-slate-950/90 border border-white/15 rounded-xl px-3 py-1.5 text-xs font-mono text-white" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- TAB 3: MULTI-PHOTO & OVERLAY LAYER SYSTEM                 -->
+      <!-- ========================================================= -->
+      <div id="panel-photos" class="tab-panel hidden space-y-3.5">
+        <!-- Main Background Photo Controls -->
+        <div class="bg-slate-900/80 border border-white/10 rounded-3xl p-4 backdrop-blur-xl space-y-3">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="image" class="w-4 h-4 text-cyan-400"></i>
+              Main News Photo & Filters
+            </h2>
+            <button type="button" id="btn-reset-main-photo" class="text-[11px] text-cyan-400 hover:underline">Reset Photo</button>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-400">Zoom</span>
+                <span id="val-photo-zoom" class="text-cyan-400 font-mono">100%</span>
+              </div>
+              <input type="range" id="photo-zoom" min="50" max="300" value="100" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-400">Pan X</span>
+                <span id="val-photo-x" class="text-cyan-400 font-mono">0</span>
+              </div>
+              <input type="range" id="photo-x" min="-500" max="500" value="0" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-400">Pan Y</span>
+                <span id="val-photo-y" class="text-cyan-400 font-mono">0</span>
+              </div>
+              <input type="range" id="photo-y" min="-500" max="500" value="0" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-400">Brightness</span>
+                <span id="val-photo-bright" class="text-cyan-400 font-mono">100%</span>
+              </div>
+              <input type="range" id="photo-bright" min="40" max="180" value="100" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-400">Contrast</span>
+                <span id="val-photo-contrast" class="text-cyan-400 font-mono">105%</span>
+              </div>
+              <input type="range" id="photo-contrast" min="50" max="180" value="105" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-400">Saturation</span>
+                <span id="val-photo-sat" class="text-cyan-400 font-mono">105%</span>
+              </div>
+              <input type="range" id="photo-sat" min="0" max="200" value="105" class="w-full" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Extra Overlay Photos / Logos / Reporter Insets -->
+        <div class="bg-slate-900/80 border border-white/10 rounded-3xl p-4 backdrop-blur-xl space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="layers-2" class="w-4 h-4 text-amber-400"></i>
+                Extra Photo & Logo Overlays
+              </h3>
+              <p class="text-[10px] text-slate-400">Add inset photos, reporter portraits, or stickers & drag on canvas</p>
+            </div>
+            <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold flex items-center gap-1 transition">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>Add Photo</span>
+              <input type="file" id="add-overlay-photo-input" accept="image/*" class="hidden" />
+            </label>
+          </div>
+
+          <div id="overlay-photos-list" class="space-y-2.5">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- TAB 4: QR CODE GENERATOR & CHANNEL BRANDING               -->
+      <!-- ========================================================= -->
+      <div id="panel-qr" class="tab-panel hidden space-y-3.5">
+        <!-- QR Code Studio -->
+        <div class="bg-slate-900/80 border border-white/10 rounded-3xl p-4 backdrop-blur-xl space-y-3">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="qr-code" class="w-4 h-4 text-cyan-400"></i>
+              Dynamic QR Code Generator & Uploader
+            </h2>
+            <label class="inline-flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+              <input type="checkbox" id="show-qr" checked class="accent-cyan-400 w-4 h-4 rounded" />
+              <span>Show QR</span>
+            </label>
+          </div>
+
+          <div class="flex gap-2">
+            <input type="text" id="qr-url" value="https://facebook.com/haragachpratidin" placeholder="Paste news link or text for QR..." class="flex-1 bg-slate-950/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:border-cyan-400 outline-none" />
+            <label class="cursor-pointer px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-xs text-slate-200 flex items-center gap-1" title="Upload Custom QR Image">
+              <i data-lucide="upload" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span>Custom</span>
+              <input type="file" id="upload-custom-qr" accept="image/*" class="hidden" />
+            </label>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <div>
+              <div class="flex justify-between text-[10px] mb-1">
+                <span class="text-slate-400">QR Size</span>
+                <span id="val-qr-size" class="text-cyan-400 font-mono">115px</span>
+              </div>
+              <input type="range" id="qr-size" min="60" max="260" value="115" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-[10px] mb-1">
+                <span class="text-slate-400">Padding</span>
+                <span id="val-qr-pad" class="text-cyan-400 font-mono">10px</span>
+              </div>
+              <input type="range" id="qr-pad" min="0" max="28" value="10" class="w-full" />
+            </div>
+            <div>
+              <label class="text-[10px] text-slate-400 block mb-1">QR Dots Color</label>
+              <input type="color" id="qr-fg" value="#0f172a" class="w-full h-7 rounded-lg bg-transparent border border-white/15 cursor-pointer" />
+            </div>
+            <div>
+              <label class="text-[10px] text-slate-400 block mb-1">QR Box BG</label>
+              <input type="color" id="qr-bg" value="#ffffff" class="w-full h-7 rounded-lg bg-transparent border border-white/15 cursor-pointer" />
+            </div>
+          </div>
+          <p class="text-[10px] text-slate-400 flex items-center gap-1">
+            <i data-lucide="move" class="w-3 h-3 text-cyan-400"></i>
+            Tip: Drag the QR code directly on the preview canvas to move it anywhere.
+          </p>
+        </div>
+
+        <!-- Page Branding & Sponsor Strip -->
+        <div class="bg-slate-900/80 border border-white/10 rounded-3xl p-4 backdrop-blur-xl space-y-3">
+          <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="award" class="w-4 h-4 text-cyan-400"></i>
+            Page Header & Bottom Sponsor Bar
+          </h3>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="text-[11px] text-slate-300 block mb-1">Page / Channel Name</label>
+              <input type="text" id="brand-name" value="হারাগাছ প্রতিদিন" class="w-full bg-slate-950/90 border border-white/15 rounded-xl px-3 py-1.5 text-sm font-bangla text-white" />
+            </div>
+            <div>
+              <label class="text-[11px] text-slate-300 block mb-1">Sub-Tagline</label>
+              <input type="text" id="brand-tagline" value="মাটি ও মানুষের কথা বলে" class="w-full bg-slate-950/90 border border-white/15 rounded-xl px-3 py-1.5 text-xs font-bangla text-slate-300" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 items-end">
+            <div>
+              <div class="flex justify-between mb-1">
+                <label class="text-[11px] text-slate-300">Date Pill</label>
+                <button type="button" id="btn-today-bangla" class="text-[10px] text-cyan-400 hover:underline">Today (Bangla)</button>
+              </div>
+              <input type="text" id="date-text" value="১০ নভেম্বর, ২০২৬" class="w-full bg-slate-950/90 border border-white/15 rounded-xl px-3 py-1.5 text-xs font-bangla text-white" />
+            </div>
+            <label class="cursor-pointer px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-xs text-slate-200 flex items-center justify-center gap-1.5">
+              <i data-lucide="upload-cloud" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span>Upload Page Logo</span>
+              <input type="file" id="logo-upload" accept="image/*" class="hidden" />
+            </label>
+          </div>
+
+          <hr class="border-white/10" />
+
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-200">Bottom Sponsor Banner</span>
+            <label class="inline-flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+              <input type="checkbox" id="show-sponsor" checked class="accent-cyan-400 w-4 h-4 rounded" />
+              <span>Show Sponsor</span>
+            </label>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input type="text" id="sponsor-title" value="Afra Homemade Cake" class="w-full bg-slate-950/90 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white" />
+            <input type="text" id="sponsor-sub" value="হারাগাছ, রংপুর • 01987-352566" class="w-full bg-slate-950/90 border border-white/15 rounded-xl px-3 py-1.5 text-xs font-bangla text-slate-300" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- TAB 5: COMPLETE TYPOGRAPHY, FONT WEIGHT & CUSTOM TEXTS    -->
+      <!-- ========================================================= -->
+      <div id="panel-text" class="tab-panel hidden space-y-3.5">
+        <div class="bg-slate-900/80 border border-white/10 rounded-3xl p-4 backdrop-blur-xl space-y-3">
+          <h2 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="type" class="w-4 h-4 text-cyan-400"></i>
+            Headline, Font Family, Weight & Style
+          </h2>
+
+          <!-- Category Badge -->
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="show-tag" checked class="accent-cyan-400 w-4 h-4 rounded" />
+            <input type="text" id="tag-text" value="ব্রেকিং নিউজ" class="flex-1 bg-slate-950/90 border border-white/15 rounded-xl px-3 py-1.5 text-xs font-bangla text-white" />
+            <button type="button" data-tag="ব্রেকিং নিউজ" class="preset-tag px-2 py-1 rounded-lg bg-white/5 text-[10px] font-bangla">ব্রেকিং</button>
+            <button type="button" data-tag="স্থানীয় সংবাদ" class="preset-tag px-2 py-1 rounded-lg bg-white/5 text-[10px] font-bangla">স্থানীয়</button>
+          </div>
+
+          <!-- Main Headline Textarea -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="text-[11px] text-slate-300">Main Headline</label>
+              <span class="text-[10px] text-amber-300">Wrap words in *word* or list below to highlight</span>
+            </div>
+            <textarea id="headline-text" rows="2" class="w-full bg-slate-950/90 border border-white/15 rounded-xl px-3 py-2 text-sm sm:text-base font-bangla text-white leading-snug focus:border-cyan-400 outline-none">ট্রাক্টর-চার্জার ভ্যানের সংঘর্ষে
+যুবক *নিহত*, *আহত ৪*</textarea>
+          </div>
+
+          <!-- Keyword Highlight List -->
+          <div>
+            <label class="text-[11px] text-slate-300 block mb-1">Extra Highlight Words (comma separated)</label>
+            <input type="text" id="highlight-words" value="নিহত, আহত ৪" class="w-full bg-slate-950/90 border border-white/15 rounded-xl px-3 py-1.5 text-xs font-bangla text-amber-300" />
+          </div>
+
+          <!-- Font Family, Weight & Style Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div>
+              <label class="text-[10px] text-slate-400 block mb-1">Font Family</label>
+              <select id="font-family" class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-2 text-xs text-white">
+                <option value="Hind Siliguri">Hind Siliguri (Modern)</option>
+                <option value="Noto Sans Bengali">Noto Sans Bengali</option>
+                <option value="Noto Serif Bengali">Noto Serif Bengali</option>
+                <option value="Tiro Bangla">Tiro Bangla (Newspaper)</option>
+                <option value="Galada">Galada (Calligraphy)</option>
+                <option value="Atma">Atma (Rounded)</option>
+                <option value="Mina">Mina (Geometric)</option>
+                <option value="Poppins">Poppins (English/UI)</option>
+                <option value="Playfair Display">Playfair Display (Serif)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-[10px] text-slate-400 block mb-1">Font Weight</label>
+              <select id="font-weight" class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-2 text-xs text-white">
+                <option value="300">300 — Light</option>
+                <option value="400">400 — Regular</option>
+                <option value="500">500 — Medium</option>
+                <option value="600">600 — SemiBold</option>
+                <option value="700" selected>700 — Bold</option>
+                <option value="800">800 — ExtraBold</option>
+                <option value="900">900 — Black</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-[10px] text-slate-400 block mb-1">Font Style & Align</label>
+              <div class="flex gap-1">
+                <button type="button" id="btn-font-italic" class="px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/15 text-xs italic font-serif text-slate-300" title="Toggle Italic">I</button>
+                <button type="button" data-align="left" class="align-btn flex-1 py-1.5 rounded-xl bg-white/5 text-slate-400 flex justify-center"><i data-lucide="align-left" class="w-3.5 h-3.5"></i></button>
+                <button type="button" data-align="center" class="align-btn flex-1 py-1.5 rounded-xl bg-cyan-400 text-slate-950 flex justify-center"><i data-lucide="align-center" class="w-3.5 h-3.5"></i></button>
+                <button type="button" data-align="right" class="align-btn flex-1 py-1.5 rounded-xl bg-white/5 text-slate-400 flex justify-center"><i data-lucide="align-right" class="w-3.5 h-3.5"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Size, Line Height, Letter Spacing & Text Stroke -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <div>
+              <div class="flex justify-between text-[10px] mb-1">
+                <span class="text-slate-400">Size</span>
+                <span id="val-font-size" class="text-cyan-400 font-mono">54px</span>
+              </div>
+              <input type="range" id="font-size" min="26" max="100" value="54" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-[10px] mb-1">
+                <span class="text-slate-400">Line Gap</span>
+                <span id="val-line-height" class="text-cyan-400 font-mono">1.28</span>
+              </div>
+              <input type="range" id="line-height" min="0.95" max="1.8" step="0.03" value="1.28" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-[10px] mb-1">
+                <span class="text-slate-400">Spacing</span>
+                <span id="val-letter-spacing" class="text-cyan-400 font-mono">0px</span>
+              </div>
+              <input type="range" id="letter-spacing" min="-3" max="12" step="0.5" value="0" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-[10px] mb-1">
+                <span class="text-slate-400">Stroke</span>
+                <span id="val-text-stroke" class="text-cyan-400 font-mono">0px</span>
+              </div>
+              <input type="range" id="text-stroke" min="0" max="8" step="0.5" value="0" class="w-full" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Unlimited Custom Draggable Text Layers -->
+        <div class="bg-slate-900/80 border border-white/10 rounded-3xl p-4 backdrop-blur-xl space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5">
+                <i data-lucide="plus-square" class="w-4 h-4 text-cyan-400"></i>
+                Custom Floating Text Blocks
+              </h3>
+              <p class="text-[10px] text-slate-400">Add extra text anywhere & drag on canvas</p>
+            </div>
+            <button type="button" id="btn-add-custom-text" class="px-3 py-1.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 text-xs font-bold flex items-center gap-1">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>Add Text</span>
+            </button>
+          </div>
+          <div id="custom-text-list" class="space-y-2.5"></div>
+        </div>
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- TAB 6: COLOR STUDIO & 1-CLICK THEME PRESETS               -->
+      <!-- ========================================================= -->
+      <div id="panel-colors" class="tab-panel hidden space-y-3.5">
+        <!-- Quick Theme Presets -->
+        <div class="bg-slate-900/80 border border-white/10 rounded-3xl p-4 backdrop-blur-xl space-y-3">
+          <h2 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="wand-2" class="w-4 h-4 text-cyan-400"></i>
+            1-Click Theme Presets
+          </h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <button type="button" data-preset="haragach-glass" class="theme-preset-btn p-2.5 rounded-xl bg-gradient-to-r from-red-900/70 to-slate-900 border border-red-500/40 text-left">
+              <div class="text-xs font-bold text-white">Haragach Liquid</div>
+              <div class="text-[10px] text-amber-300">Crimson Glass + Gold</div>
+            </button>
+            <button type="button" data-preset="royal-wood" class="theme-preset-btn p-2.5 rounded-xl bg-gradient-to-r from-amber-900/70 to-stone-900 border border-amber-500/40 text-left">
+              <div class="text-xs font-bold text-amber-200">Royal Teak Wood</div>
+              <div class="text-[10px] text-amber-400">Carved Wood + Cream</div>
+            </button>
+            <button type="button" data-preset="cyber-cyan" class="theme-preset-btn p-2.5 rounded-xl bg-gradient-to-r from-cyan-950 to-slate-950 border border-cyan-400/50 text-left">
+              <div class="text-xs font-bold text-cyan-300">Cyan Cyber Glass</div>
+              <div class="text-[10px] text-cyan-400">Neon Rim + Dark</div>
+            </button>
+            <button type="button" data-preset="classic-paper" class="theme-preset-btn p-2.5 rounded-xl bg-slate-100 border border-slate-300 text-left">
+              <div class="text-xs font-bold text-slate-900">Classic Paper</div>
+              <div class="text-[10px] text-red-700">White + Red Editorial</div>
+            </button>
+            <button type="button" data-preset="midnight-gold" class="theme-preset-btn p-2.5 rounded-xl bg-gradient-to-r from-slate-900 to-indigo-950 border border-amber-400/40 text-left">
+              <div class="text-xs font-bold text-amber-300">Midnight Gold</div>
+              <div class="text-[10px] text-slate-300">Split Card + Gold</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Granular Color Pickers + Hex Inputs -->
+        <div class="bg-slate-900/80 border border-white/10 rounded-3xl p-4 backdrop-blur-xl space-y-3">
+          <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="palette" class="w-4 h-4 text-cyan-400"></i>
+            Custom Color Studio
+          </h3>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="color-controls-grid">
+            <!-- Glass / Panel Tint Color -->
+            <div class="p-2.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between gap-2">
+              <div>
+                <div class="text-xs font-semibold text-white">Glass / Panel Tint</div>
+                <div class="text-[10px] text-slate-400 font-mono" id="hex-tint">#5c1418</div>
+              </div>
+              <input type="color" id="col-tint" value="#5c1418" class="w-10 h-9 rounded-xl bg-transparent border border-white/20 cursor-pointer" />
+            </div>
+
+            <!-- Primary Brand / Tag Color -->
+            <div class="p-2.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between gap-2">
+              <div>
+                <div class="text-xs font-semibold text-white">Primary Brand / Badge</div>
+                <div class="text-[10px] text-slate-400 font-mono" id="hex-primary">#b91c1c</div>
+              </div>
+              <input type="color" id="col-primary" value="#b91c1c" class="w-10 h-9 rounded-xl bg-transparent border border-white/20 cursor-pointer" />
+            </div>
+
+            <!-- Headline Text Color -->
+            <div class="p-2.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between gap-2">
+              <div>
+                <div class="text-xs font-semibold text-white">Headline Text Color</div>
+                <div class="text-[10px] text-slate-400 font-mono" id="hex-text">#ffffff</div>
+              </div>
+              <input type="color" id="col-text" value="#ffffff" class="w-10 h-9 rounded-xl bg-transparent border border-white/20 cursor-pointer" />
+            </div>
+
+            <!-- Highlight Keyword Color -->
+            <div class="p-2.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between gap-2">
+              <div>
+                <div class="text-xs font-semibold text-white">Highlight Word Color</div>
+                <div class="text-[10px] text-slate-400 font-mono" id="hex-highlight">#fbbf24</div>
+              </div>
+              <input type="color" id="col-highlight" value="#fbbf24" class="w-10 h-9 rounded-xl bg-transparent border border-white/20 cursor-pointer" />
+            </div>
+
+            <!-- Border / Neon Rim Color -->
+            <div class="p-2.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between gap-2">
+              <div>
+                <div class="text-xs font-semibold text-white">Border / Rim Glow</div>
+                <div class="text-[10px] text-slate-400 font-mono" id="hex-border">#ffffff</div>
+              </div>
+              <input type="color" id="col-border" value="#ffffff" class="w-10 h-9 rounded-xl bg-transparent border border-white/20 cursor-pointer" />
+            </div>
+
+            <!-- Sponsor Bar Background -->
+            <div class="p-2.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between gap-2">
+              <div>
+                <div class="text-xs font-semibold text-white">Sponsor Bar BG</div>
+                <div class="text-[10px] text-slate-400 font-mono" id="hex-sponsor-bg">#ffffff</div>
+              </div>
+              <input type="color" id="col-sponsor-bg" value="#ffffff" class="w-10 h-9 rounded-xl bg-transparent border border-white/20 cursor-pointer" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+
+    /**
+     * Master Application State
+     */
+    const state = {
+      template: 'liquid-glass',
+      width: 1080,
+      height: 1350,
+      ratioLabel: '4:5',
+
+      // Main Photo
+      photoImg: null,
+      photoZoom: 100,
+      photoX: 0,
+      photoY: 0,
+      photoBright: 100,
+      photoContrast: 105,
+      photoSat: 105,
+
+      // Extra Overlay Photo Layers (Multi-Photo System)
+      overlayPhotos: [], // { id, img, x, y, width, radiusPct, borderWidth, borderColor, opacity }
+
+      // Glass & Material Physics
+      glassOpacity: 48,
+      glassBlur: 24,
+      glassSheen: 75,
+      glassEdge: 2.5,
+      glassWave: true,
+      panelRatio: 36,
+
+      // Wooden Style Settings
+      woodTone: 'teak',
+      woodGrain: 65,
+      woodGloss: 50,
+      woodFrame: 28,
+
+      // Independent Rounded Corners (0-120px)
+      linkCorners: false,
+      rOuter: 28,
+      rPhoto: 24,
+      rPanel: 32,
+      rBadge: 50,
+      rSponsor: 18,
+      outerPad: 0,
+      borderWidth: 3,
+      shadowIntensity: 45,
+
+      // Branding & Date
+      brandName: 'হারাগাছ প্রতিদিন',
+      brandTagline: 'মাটি ও মানুষের কথা বলে',
+      dateText: '১০ নভেম্বর, ২০২৬',
+      logoImg: null,
+
+      // QR Code
+      showQr: true,
+      qrUrl: 'https://facebook.com/haragachpratidin',
+      qrImg: null,
+      qrCustomPos: null, // { x, y } if dragged manually
+      qrSize: 115,
+      qrPad: 10,
+      qrFg: '#0f172a',
+      qrBg: '#ffffff',
+
+      // Sponsor Strip
+      showSponsor: true,
+      sponsorTitle: 'Afra Homemade Cake',
+      sponsorSub: 'হারাগাছ, রংপুর • 01987-352566',
+
+      // Typography
+      showTag: true,
+      tagText: 'ব্রেকিং নিউজ',
+      headlineText: 'ট্রাক্টর-চার্জার ভ্যানের সংঘর্ষে\nযুবক *নিহত*, *আহত ৪*',
+      highlightWords: 'নিহত, আহত ৪',
+      fontFamily: 'Hind Siliguri',
+      fontWeight: '700',
+      fontItalic: false,
+      textAlign: 'center',
+      fontSize: 54,
+      lineHeight: 1.28,
+      letterSpacing: 0,
+      textStroke: 0,
+
+      // Colors
+      colTint: '#5c1418',
+      colPrimary: '#b91c1c',
+      colText: '#ffffff',
+      colHighlight: '#fbbf24',
+      colBorder: '#ffffff',
+      colSponsorBg: '#ffffff',
+
+      // Custom Draggable Text Layers
+      customTexts: [], // { id, text, x, y, size, fontFamily, fontWeight, italic, color, bgColor, hasPill, radius }
+
+      // Selection state for interactive canvas handles
+      selectedItem: null // { type: 'photo' | 'overlay' | 'qr' | 'text', index?: number }
+    };
+
+    const canvas = document.getElementById('card-canvas');
+    const ctx = canvas.getContext('2d');
+    const blurCanvas = document.createElement('canvas');
+    const blurCtx = blurCanvas.getContext('2d');
+
+    // Cache procedural wood canvas to keep dragging silky-smooth
+    let cachedWoodCanvas = null;
+    let cachedWoodKey = '';
+
+    /**
+     * Pure-JS Reliable QR Code Generator (with fallback)
+     */
+    function buildQRMatrixImage(text, fg, bg) {
+      if (!text || !text.trim()) {
+        state.qrImg = null;
+        renderCard();
+        return;
+      }
+      try {
+        const qr = qrcode(0, 'M');
+        qr.addData(text.trim());
+        qr.make();
+        const count = qr.getModuleCount();
+        const cellSize = 10;
+        const size = count * cellSize;
+        const qCanvas = document.createElement('canvas');
+        qCanvas.width = size;
+        qCanvas.height = size;
+        const qCtx = qCanvas.getContext('2d');
+
+        qCtx.fillStyle = bg;
+        qCtx.fillRect(0, 0, size, size);
+        qCtx.fillStyle = fg;
+
+        for (let r = 0; r < count; r++) {
+          for (let c = 0; c < count; c++) {
+            if (qr.isDark(r, c)) {
+              qCtx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
+            }
+          }
+        }
+
+        const img = new Image();
+        img.onload = () => {
+          state.qrImg = img;
+          renderCard();
+        };
+        img.src = qCanvas.toDataURL('image/png');
+      } catch (err) {
+        console.error('QR generation failed:', err);
+      }
+    }
+
+    /**
+     * Procedural High-Detail Wood Grain Generator
+     */
+    function getWoodTextureCanvas(w, h, tone, grainDepth, gloss) {
+      const key = `${w}x${h}_${tone}_${grainDepth}_${gloss}`;
+      if (cachedWoodCanvas && cachedWoodKey === key) return cachedWoodCanvas;
+
+      const palettes = {
+        teak:     { base: '#7c4722', dark: '#4a250d', light: '#a36536' },
+        mahogany: { base: '#5e1e1e', dark: '#330c0c', light: '#873232' },
+        oak:      { base: '#b07d48', dark: '#785027', light: '#cfa06b' },
+        walnut:   { base: '#3e2723', dark: '#211310', light: '#5d4037' },
+        bamboo:   { base: '#c9a66b', dark: '#94743e', light: '#e2c58f' },
+        ebony:    { base: '#1f1c1a', dark: '#0d0b0a', light: '#383330' }
+      };
+      const pal = palettes[tone] || palettes.teak;
+
+      const wc = document.createElement('canvas');
+      wc.width = w;
+      wc.height = h;
+      const wctx = wc.getContext('2d');
+
+      // Base wood fill
+      wctx.fillStyle = pal.base;
+      wctx.fillRect(0, 0, w, h);
+
+      // Organic wood grain fibers & knots
+      const alpha = (grainDepth / 100) * 0.42;
+      const step = 4;
+      for (let y = 0; y < h; y += step) {
+        const wave = Math.sin(y * 0.025) * 18 + Math.cos(y * 0.008) * 30;
+        const streak = Math.sin(y * 0.14 + wave * 0.08);
+        wctx.fillStyle = streak > 0 ? pal.dark : pal.light;
+        wctx.globalAlpha = Math.abs(streak) * alpha;
+        wctx.fillRect(0, y, w, step + 1);
+      }
+
+      // Subtle vertical plank seams
+      wctx.globalAlpha = alpha * 0.65;
+      wctx.fillStyle = pal.dark;
+      const plankW = Math.max(180, Math.round(w / 4));
+      for (let px = plankW; px < w; px += plankW) {
+        wctx.fillRect(px, 0, 3, h);
+      }
+
+      // Varnish gloss sheen
+      if (gloss > 0) {
+        wctx.globalAlpha = (gloss / 100) * 0.35;
+        const sheen = wctx.createLinearGradient(0, 0, w, h);
+        sheen.addColorStop(0, '#ffffff');
+        sheen.addColorStop(0.45, 'transparent');
+        sheen.addColorStop(0.75, 'rgba(255,255,255,0.5)');
+        sheen.addColorStop(1, 'transparent');
+        wctx.fillStyle = sheen;
+        wctx.fillRect(0, 0, w, h);
+      }
+
+      wctx.globalAlpha = 1;
+      cachedWoodCanvas = wc;
+      cachedWoodKey = key;
+      return wc;
+    }
+
+    /**
+     * Default Sample Scene Generator
+     */
+    function createDefaultNewsPhoto() {
+      const off = document.createElement('canvas');
+      off.width = 1200;
+      off.height = 1200;
+      const c = off.getContext('2d');
+
+      const sky = c.createLinearGradient(0, 0, 0, 700);
+      sky.addColorStop(0, '#4b5b4e');
+      sky.addColorStop(0.5, '#727e6b');
+      sky.addColorStop(1, '#3b342c');
+      c.fillStyle = sky;
+      c.fillRect(0, 0, 1200, 1200);
+
+      // Village houses
+      c.fillStyle = '#5a5f58';
+      c.fillRect(80, 260, 440, 210);
+      c.fillStyle = '#363b37';
+      c.beginPath(); c.moveTo(50, 265); c.lineTo(300, 170); c.lineTo(550, 265); c.closePath(); c.fill();
+
+      c.fillStyle = '#62665e';
+      c.fillRect(670, 285, 430, 195);
+      c.fillStyle = '#3f443f';
+      c.beginPath(); c.moveTo(640, 290); c.lineTo(885, 195); c.lineTo(1130, 290); c.closePath(); c.fill();
+
+      // Trees
+      const greens = ['#223120', '#2d4027', '#1b281a', '#374a2e'];
+      for (let i = 0; i < 28; i++) {
+        c.fillStyle = greens[i % greens.length];
+        c.beginPath();
+        c.arc(40 + i * 44, 115 + (i % 4) * 32, 78, 0, Math.PI * 2);
+        c.fill();
+      }
+
+      // Ground
+      const ground = c.createLinearGradient(0, 460, 0, 1200);
+      ground.addColorStop(0, '#6c5a4c');
+      ground.addColorStop(1, '#362a21');
+      c.fillStyle = ground;
+      c.fillRect(0, 460, 1200, 740);
+
+      // Crowd figures
+      const colors = ['#e2e8f0', '#dc2626', '#1e3a8a', '#d97706', '#334155', '#0f766e', '#cbd5e1', '#7f1d1d', '#15803d'];
+      for (let i = 0; i < 16; i++) {
+        const px = 170 + i * 54;
+        const py = 415 + (i % 3) * 14;
+        c.fillStyle = colors[(i * 2) % colors.length];
+        c.beginPath(); c.roundRect(px - 22, py + 32, 44, 110, 16); c.fill();
+        c.fillStyle = '#8d6346';
+        c.beginPath(); c.arc(px, py + 16, 17, 0, Math.PI * 2); c.fill();
+      }
+
+      const fgPeople = [
+        { x: 135, y: 495, s: 1.05, c: '#f1f5f9', cap: true },
+        { x: 250, y: 545, s: 0.92, c: '#115e59', cap: false },
+        { x: 360, y: 475, s: 1.08, c: '#e2e8f0', cap: false },
+        { x: 465, y: 465, s: 1.02, c: '#475569', cap: false },
+        { x: 645, y: 485, s: 1.04, c: '#94a3b8', cap: false },
+        { x: 770, y: 470, s: 1.12, c: '#dc2626', cap: false },
+        { x: 900, y: 465, s: 1.06, c: '#15803d', cap: false },
+        { x: 1025, y: 480, s: 1.05, c: '#cbd5e1', cap: false }
+      ];
+      fgPeople.forEach(p => {
+        c.save();
+        c.translate(p.x, p.y);
+        c.scale(p.s, p.s);
+        c.fillStyle = p.c;
+        c.beginPath(); c.roundRect(-42, 48, 84, 240, 28); c.fill();
+        c.fillStyle = '#9c6b4e';
+        c.beginPath(); c.arc(0, 18, 27, 0, Math.PI * 2); c.fill();
+        c.fillStyle = p.cap ? '#ffffff' : '#1c1917';
+        c.beginPath(); c.arc(0, 12, 27, Math.PI * 0.95, Math.PI * 2.05); c.fill();
+        c.restore();
+      });
+
+      const img = new Image();
+      img.onload = () => {
+        state.photoImg = img;
+        renderCard();
+      };
+      img.src = off.toDataURL('image/jpeg', 0.92);
+    }
+
+    /**
+     * Helpers
+     */
+    function hexToRgb(hex) {
+      const clean = (hex || '#000000').replace('#', '');
+      const num = parseInt(clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean, 16);
+      return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+    }
+
+    function drawRoundRect(context, x, y, w, h, r) {
+      const maxR = Math.min(w, h) / 2;
+      const rad = Math.max(0, Math.min(r, maxR));
+      context.beginPath();
+      context.roundRect(x, y, w, h, rad);
+    }
+
+    /**
+     * Draw Frosted Liquid Glass Surface
+     */
+    function drawLiquidGlassPanel(context, x, y, w, h, radius, opts = {}) {
+      const {
+        tintHex = state.colTint,
+        opacity = state.glassOpacity / 100,
+        sheen = state.glassSheen / 100,
+        edgeWidth = state.glassEdge,
+        edgeColor = state.colBorder,
+        wave = state.glassWave
+      } = opts;
+
+      const rgb = hexToRgb(tintHex);
+
+      context.save();
+      drawRoundRect(context, x, y, w, h, radius);
+      context.clip();
+
+      // 1. Blurred photo backdrop
+      if (blurCanvas.width > 0) {
+        context.drawImage(blurCanvas, 0, 0, state.width, state.height);
+      }
+
+      // 2. Tinted translucent liquid gradient
+      const tintGrad = context.createLinearGradient(x, y, x + w * 0.4, y + h);
+      tintGrad.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${Math.min(1, opacity * 0.9)})`);
+      tintGrad.addColorStop(0.6, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`);
+      tintGrad.addColorStop(1, `rgba(${Math.max(0, rgb.r - 25)}, ${Math.max(0, rgb.g - 25)}, ${Math.max(0, rgb.b - 25)}, ${Math.min(1, opacity + 0.12)})`);
+      context.fillStyle = tintGrad;
+      context.fillRect(x, y, w, h);
+
+      // 3. Milky frosted sheen
+      if (sheen > 0) {
+        const frost = context.createLinearGradient(x, y, x, y + h);
+        frost.addColorStop(0, `rgba(255, 255, 255, ${0.26 * sheen})`);
+        frost.addColorStop(0.4, `rgba(255, 255, 255, ${0.05 * sheen})`);
+        frost.addColorStop(1, `rgba(255, 255, 255, ${0.14 * sheen})`);
+        context.fillStyle = frost;
+        context.fillRect(x, y, w, h);
+
+        // Specular diagonal liquid light wave
+        if (wave) {
+          const diag = context.createLinearGradient(x, y, x + w, y + h);
+          diag.addColorStop(0, `rgba(255, 255, 255, ${0.3 * sheen})`);
+          diag.addColorStop(0.48, 'rgba(255, 255, 255, 0)');
+          diag.addColorStop(0.78, `rgba(255, 255, 255, ${0.16 * sheen})`);
+          diag.addColorStop(1, 'rgba(255, 255, 255, 0)');
+          context.fillStyle = diag;
+          context.fillRect(x, y, w, h);
+
+          context.beginPath();
+          context.moveTo(x - 30, y + h * 0.68);
+          context.bezierCurveTo(x + w * 0.32, y + h * 0.32, x + w * 0.68, y + h * 0.92, x + w + 30, y + h * 0.42);
+          context.lineWidth = Math.max(16, h * 0.13);
+          context.strokeStyle = `rgba(255, 255, 255, ${0.11 * sheen})`;
+          context.stroke();
+        }
+      }
+
+      context.restore();
+
+      // 4. Outer Glass Specular Edge Border
+      if (edgeWidth > 0) {
+        context.save();
+        drawRoundRect(context, x, y, w, h, radius);
+        const er = hexToRgb(edgeColor);
+        const bGrad = context.createLinearGradient(x, y, x + w, y + h);
+        bGrad.addColorStop(0, `rgba(${er.r}, ${er.g}, ${er.b}, 0.85)`);
+        bGrad.addColorStop(0.5, `rgba(${er.r}, ${er.g}, ${er.b}, 0.35)`);
+        bGrad.addColorStop(1, `rgba(${er.r}, ${er.g}, ${er.b}, 0.75)`);
+        context.strokeStyle = bGrad;
+        context.lineWidth = edgeWidth;
+        context.stroke();
+        context.restore();
+      }
+    }
+
+    /**
+     * Draw Main Photo inside a Region with Filters, Zoom & Pan
+     */
+    function drawMainPhotoRegion(targetCtx, rx, ry, rw, rh, radius = 0) {
+      if (!state.photoImg) return;
+      targetCtx.save();
+      drawRoundRect(targetCtx, rx, ry, rw, rh, radius);
+      targetCtx.clip();
+
+      targetCtx.filter = `brightness(${state.photoBright}%) contrast(${state.photoContrast}%) saturate(${state.photoSat}%)`;
+
+      const img = state.photoImg;
+      const baseScale = Math.max(rw / img.width, rh / img.height);
+      const scale = baseScale * (state.photoZoom / 100);
+      const dw = img.width * scale;
+      const dh = img.height * scale;
+      const dx = rx + (rw - dw) / 2 + state.photoX;
+      const dy = ry + (rh - dh) / 2 + state.photoY;
+
+      targetCtx.drawImage(img, dx, dy, dw, dh);
+      targetCtx.restore();
+    }
+
+    /**
+     * Draw Rich Multi-line Bangla/English Headline with *word* & Keyword Highlighting
+     */
+    function drawRichHeadline(context, text, centerX, startY, maxWidth, opts = {}) {
+      const {
+        fontSize = state.fontSize,
+        lineHeight = state.lineHeight,
+        fontFamily = state.fontFamily,
+        fontWeight = state.fontWeight,
+        fontItalic = state.fontItalic,
+        baseColor = state.colText,
+        accentColor = state.colHighlight,
+        align = state.textAlign,
+        letterSpacing = state.letterSpacing,
+        strokeWidth = state.textStroke
+      } = opts;
+
+      const fontStr = `${fontItalic ? 'italic ' : ''}${fontWeight} ${fontSize}px "${fontFamily}", "Hind Siliguri", sans-serif`;
+      context.font = fontStr;
+      if ('letterSpacing' in context) {
+        context.letterSpacing = `${letterSpacing}px`;
+      }
+
+      const rawLines = text.split('\n');
+      const wrappedLines = [];
+
+      rawLines.forEach(line => {
+        const words = line.split(' ');
+        let cur = '';
+        words.forEach(w => {
+          const test = cur ? `${cur} ${w}` : w;
+          if (context.measureText(test).width > maxWidth && cur) {
+            wrappedLines.push(cur);
+            cur = w;
+          } else {
+            cur = test;
+          }
+        });
+        wrappedLines.push(cur);
+      });
+
+      const extraKeywords = state.highlightWords.split(',').map(s => s.trim()).filter(Boolean);
+      const step = fontSize * lineHeight;
+
+      wrappedLines.forEach((line, idx) => {
+        const y = startY + idx * step;
+
+        // First split by *asterisk* inline markers
+        let segments = [];
+        const starParts = line.split(/(\*[^*]+\*)/g);
+        starParts.forEach(part => {
+          if (!part) return;
+          if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+            segments.push({ text: part.slice(1, -1), isAccent: true });
+          } else {
+            segments.push({ text: part, isAccent: false });
+          }
+        });
+
+        // Also match comma-separated highlight keywords
+        extraKeywords.forEach(kw => {
+          const next = [];
+          segments.forEach(seg => {
+            if (seg.isAccent || !kw) {
+              next.push(seg);
+              return;
+            }
+            const parts = seg.text.split(kw);
+            parts.forEach((p, pi) => {
+              if (p) next.push({ text: p, isAccent: false });
+              if (pi < parts.length - 1) next.push({ text: kw, isAccent: true });
+            });
+          });
+          segments = next;
+        });
+
+        let totalW = 0;
+        segments.forEach(s => { totalW += context.measureText(s.text).width; });
+
+        let cursorX = centerX - totalW / 2;
+        if (align === 'left') cursorX = centerX - maxWidth / 2;
+        if (align === 'right') cursorX = centerX + maxWidth / 2 - totalW;
+
+        context.save();
+        context.font = fontStr;
+        if ('letterSpacing' in context) context.letterSpacing = `${letterSpacing}px`;
+        context.textBaseline = 'top';
+
+        if (state.shadowIntensity > 0) {
+          context.shadowColor = `rgba(0, 0, 0, ${(state.shadowIntensity / 100) * 0.85})`;
+          context.shadowBlur = 12;
+          context.shadowOffsetY = 3;
+        }
+
+        segments.forEach(seg => {
+          if (strokeWidth > 0) {
+            context.strokeStyle = 'rgba(0,0,0,0.85)';
+            context.lineWidth = strokeWidth;
+            context.lineJoin = 'round';
+            context.strokeText(seg.text, cursorX, y);
+          }
+          context.fillStyle = seg.isAccent ? accentColor : baseColor;
+          context.fillText(seg.text, cursorX, y);
+          cursorX += context.measureText(seg.text).width;
+        });
+
+        context.restore();
+      });
+
+      if ('letterSpacing' in context) context.letterSpacing = '0px';
+    }
+
+    /**
+     * Draw Top Brand Header
+     */
+    function drawTopBrandBar(context, x, y, w, h, mode = 'glass') {
+      const padX = Math.round(w * 0.038);
+
+      if (mode === 'glass') {
+        drawLiquidGlassPanel(context, x, y, w, h, state.rPanel, {
+          tintHex: '#1e293b',
+          opacity: Math.max(0.22, (state.glassOpacity / 100) * 0.72),
+          sheen: state.glassSheen / 100
+        });
+      } else if (mode === 'wood') {
+        const wood = getWoodTextureCanvas(w, h, state.woodTone, state.woodGrain, state.woodGloss);
+        context.save();
+        drawRoundRect(context, x, y, w, h, state.rPanel);
+        context.clip();
+        context.drawImage(wood, x, y, w, h);
+        context.fillStyle = 'rgba(0,0,0,0.28)';
+        context.fillRect(x, y, w, h);
+        context.restore();
+        context.save();
+        drawRoundRect(context, x, y, w, h, state.rPanel);
+        context.strokeStyle = '#d97706';
+        context.lineWidth = 2.5;
+        context.stroke();
+        context.restore();
+      } else if (mode === 'light') {
+        context.save();
+        drawRoundRect(context, x, y, w, h, state.rPanel);
+        context.fillStyle = '#ffffff';
+        context.fill();
+        context.restore();
+      } else {
+        context.save();
+        drawRoundRect(context, x, y, w, h, state.rPanel);
+        context.fillStyle = 'rgba(9, 13, 22, 0.86)';
+        context.fill();
+        context.restore();
+      }
+
+      const centerY = y + h / 2;
+      let cursorX = x + padX;
+
+      if (state.logoImg) {
+        const lSize = Math.round(h * 0.64);
+        context.save();
+        drawRoundRect(context, cursorX, centerY - lSize / 2, lSize, lSize, Math.min(state.rBadge, lSize / 2));
+        context.clip();
+        context.drawImage(state.logoImg, cursorX, centerY - lSize / 2, lSize, lSize);
+        context.restore();
+        cursorX += lSize + 14;
+      }
+
+      const titleSize = Math.max(24, Math.round(w * 0.036));
+      context.save();
+      context.font = `700 ${titleSize}px "Hind Siliguri", sans-serif`;
+      context.textBaseline = 'middle';
+      context.fillStyle = mode === 'light' ? state.colPrimary : '#ffffff';
+      if (mode !== 'light') {
+        context.shadowColor = 'rgba(0,0,0,0.5)';
+        context.shadowBlur = 8;
+      }
+      context.fillText(state.brandName, cursorX, state.brandTagline ? centerY - 10 : centerY);
+
+      if (state.brandTagline) {
+        context.font = `500 ${Math.round(titleSize * 0.44)}px "Hind Siliguri", sans-serif`;
+        context.fillStyle = mode === 'light' ? '#475569' : 'rgba(255,255,255,0.82)';
+        context.fillText(state.brandTagline, cursorX, centerY + titleSize * 0.48);
+      }
+      context.restore();
+
+      // Date Pill
+      if (state.dateText) {
+        const dSize = Math.max(17, Math.round(w * 0.023));
+        context.save();
+        context.font = `600 ${dSize}px "Hind Siliguri", sans-serif`;
+        const tw = context.measureText(state.dateText).width;
+        const pw = tw + 40;
+        const ph = Math.round(h * 0.54);
+        const px = x + w - padX - pw;
+        const py = centerY - ph / 2;
+
+        drawRoundRect(context, px, py, pw, ph, state.rBadge);
+        if (mode === 'glass') {
+          context.fillStyle = 'rgba(15, 23, 42, 0.42)';
+          context.fill();
+          context.strokeStyle = 'rgba(255,255,255,0.45)';
+          context.lineWidth = 1.5;
+          context.stroke();
+          context.fillStyle = '#ffffff';
+        } else if (mode === 'light') {
+          context.fillStyle = '#fef2f2';
+          context.fill();
+          context.fillStyle = state.colPrimary;
+        } else {
+          context.fillStyle = state.colPrimary;
+          context.fill();
+          context.fillStyle = '#ffffff';
+        }
+
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText(state.dateText, px + pw / 2, centerY + 1);
+        context.restore();
+      }
+    }
+
+    /**
+     * Draw Category Pill Badge
+     */
+    function drawCategoryBadge(context, cx, cy) {
+      if (!state.showTag || !state.tagText.trim()) return;
+      const fSize = Math.max(19, Math.round(state.width * 0.024));
+      context.save();
+      context.font = `700 ${fSize}px "Hind Siliguri", sans-serif`;
+      const tw = context.measureText(state.tagText).width;
+      const pw = tw + 46;
+      const ph = Math.round(fSize * 1.85);
+      const px = cx - pw / 2;
+      const py = cy - ph / 2;
+
+      drawRoundRect(context, px, py, pw, ph, state.rBadge);
+      context.fillStyle = state.colPrimary;
+      context.shadowColor = 'rgba(0,0,0,0.45)';
+      context.shadowBlur = 12;
+      context.fill();
+      context.shadowBlur = 0;
+
+      context.strokeStyle = 'rgba(255,255,255,0.6)';
+      context.lineWidth = 2;
+      context.stroke();
+
+      context.fillStyle = '#ffffff';
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(state.tagText, cx, cy + 1);
+      context.restore();
+    }
+
+    /**
+     * Draw Bottom Sponsor Strip
+     */
+    function drawSponsorBanner(context, x, y, w, h) {
+      if (!state.showSponsor) return;
+      context.save();
+      drawRoundRect(context, x, y, w, h, state.rSponsor);
+      context.fillStyle = state.colSponsorBg;
+      context.shadowColor = 'rgba(0,0,0,0.25)';
+      context.shadowBlur = 10;
+      context.fill();
+      context.shadowBlur = 0;
+
+      const rgb = hexToRgb(state.colSponsorBg);
+      const isLightBg = (rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114) > 140;
+
+      const iconSize = h - 16;
+      const ix = x + 14;
+      const iy = y + 8;
+      drawRoundRect(context, ix, iy, iconSize, iconSize, Math.min(12, state.rSponsor));
+      context.fillStyle = isLightBg ? '#fef3c7' : 'rgba(255,255,255,0.12)';
+      context.fill();
+
+      context.font = `${Math.round(iconSize * 0.58)}px sans-serif`;
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText('🎂', ix + iconSize / 2, y + h / 2 + 1);
+
+      const tx = ix + iconSize + 14;
+      const tSize = Math.max(17, Math.round(h * 0.34));
+      context.textAlign = 'left';
+      context.font = `700 ${tSize}px "Inter", "Hind Siliguri", sans-serif`;
+      context.fillStyle = isLightBg ? '#0f172a' : '#f8fafc';
+      context.fillText(state.sponsorTitle, tx, state.sponsorSub ? y + h * 0.36 : y + h / 2);
+
+      if (state.sponsorSub) {
+        context.font = `500 ${Math.round(tSize * 0.72)}px "Hind Siliguri", sans-serif`;
+        context.fillStyle = isLightBg ? '#475569' : '#94a3b8';
+        context.fillText(state.sponsorSub, tx, y + h * 0.72);
+      }
+
+      // Sponsored Label
+      const sLabel = 'স্পন্সরড';
+      context.font = `600 ${Math.max(12, Math.round(h * 0.22))}px "Hind Siliguri", sans-serif`;
+      const lw = context.measureText(sLabel).width + 16;
+      const lh = Math.round(h * 0.38);
+      drawRoundRect(context, x + w - lw - 12, y + h / 2 - lh / 2, lw, lh, state.rBadge);
+      context.fillStyle = isLightBg ? '#f1f5f9' : 'rgba(255,255,255,0.1)';
+      context.fill();
+      context.fillStyle = isLightBg ? '#64748b' : '#cbd5e1';
+      context.textAlign = 'center';
+      context.fillText(sLabel, x + w - lw / 2 - 12, y + h / 2 + 1);
+
+      context.restore();
+    }
+
+    /**
+     * Draw QR Code Box (Auto-positioned or Dragged)
+     */
+    function getQRRect(defaultX, defaultY) {
+      const size = state.qrSize;
+      const x = state.qrCustomPos ? state.qrCustomPos.x : defaultX;
+      const y = state.qrCustomPos ? state.qrCustomPos.y : defaultY;
+      return { x, y, w: size, h: size };
+    }
+
+    function drawQRWidget(context, defaultX, defaultY) {
+      if (!state.showQr || !state.qrImg) return null;
+      const rect = getQRRect(defaultX, defaultY);
+      context.save();
+      drawRoundRect(context, rect.x, rect.y, rect.w, rect.h, state.rSponsor);
+      context.fillStyle = state.qrBg;
+      context.shadowColor = 'rgba(0,0,0,0.35)';
+      context.shadowBlur = 12;
+      context.fill();
+      context.shadowBlur = 0;
+
+      const pad = Math.min(state.qrPad, rect.w * 0.25);
+      context.drawImage(state.qrImg, rect.x + pad, rect.y + pad, rect.w - pad * 2, rect.h - pad * 2);
+      context.restore();
+      return rect;
+    }
+
+    // Track last computed QR rect for hit-testing
+    let lastRenderedQRRect = null;
+
+    /**
+     * Master Canvas Render Loop
+     */
+    function renderCard(forExport = false) {
+      const W = state.width;
+      const H = state.height;
+
+      canvas.width = W;
+      canvas.height = H;
+      blurCanvas.width = W;
+      blurCanvas.height = H;
+
+      ctx.clearRect(0, 0, W, H);
+      document.getElementById('dimension-badge').textContent = `${W} × ${H} (${state.ratioLabel})`;
+
+      // Apply Outer Card Clipping & Padding
+      const pad = state.outerPad;
+      const innerX = pad;
+      const innerY = pad;
+      const innerW = W - pad * 2;
+      const innerH = H - pad * 2;
+
+      if (pad > 0) {
+        ctx.fillStyle = '#090d16';
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      ctx.save();
+      drawRoundRect(ctx, innerX, innerY, innerW, innerH, state.rOuter);
+      ctx.clip();
+
+      // Prepare Blurred Backing Canvas
+      drawMainPhotoRegion(ctx, innerX, innerY, innerW, innerH, state.rPhoto);
+      blurCtx.clearRect(0, 0, W, H);
+      blurCtx.save();
+      if (state.glassBlur > 0) {
+        blurCtx.filter = `blur(${state.glassBlur}px) saturate(135%)`;
+      }
+      drawMainPhotoRegion(blurCtx, innerX - 24, innerY - 24, innerW + 48, innerH + 48, 0);
+      blurCtx.restore();
+
+      const headerH = Math.max(78, Math.round(innerH * 0.08));
+      const sponsorH = state.showSponsor ? Math.max(64, Math.round(innerH * 0.06)) : 0;
+      const qrSize = state.showQr ? state.qrSize : 0;
+      const panelH = Math.round(innerH * (state.panelRatio / 100));
+
+      // ============================================================
+      // STYLE 1: LIQUID GLASS
+      // ============================================================
+      if (state.template === 'liquid-glass') {
+        drawTopBrandBar(ctx, innerX + 18, innerY + 18, innerW - 36, headerH, 'glass');
+
+        const pMargin = 20;
+        const pW = innerW - pMargin * 2;
+        const pH = Math.max(250, panelH);
+        const pX = innerX + pMargin;
+        const pY = innerY + innerH - pH - pMargin;
+
+        drawLiquidGlassPanel(ctx, pX, pY, pW, pH, state.rPanel);
+        drawCategoryBadge(ctx, innerX + innerW / 2, pY);
+
+        const textMaxW = state.showQr && !state.qrCustomPos ? pW - qrSize - 68 : pW - 56;
+        const textCenterX = state.showQr && !state.qrCustomPos ? pX + 28 + textMaxW / 2 : innerX + innerW / 2;
+        drawRichHeadline(ctx, state.headlineText, textCenterX, pY + (state.showTag ? 40 : 24), textMaxW);
+
+        const defQrX = pX + pW - qrSize - 22;
+        const defQrY = state.showSponsor ? pY + pH - sponsorH - qrSize - 24 : pY + pH - qrSize - 22;
+        lastRenderedQRRect = drawQRWidget(ctx, defQrX, defQrY);
+
+        if (state.showSponsor) {
+          drawSponsorBanner(ctx, pX + 18, pY + pH - sponsorH - 16, pW - 36, sponsorH);
+        }
+      }
+
+      // ============================================================
+      // STYLE 2: WOODEN FRAME & CARVED PANEL
+      // ============================================================
+      else if (state.template === 'wooden') {
+        const fw = state.woodFrame;
+        const woodTex = getWoodTextureCanvas(innerW, innerH, state.woodTone, state.woodGrain, state.woodGloss);
+        ctx.drawImage(woodTex, innerX, innerY, innerW, innerH);
+
+        // Top Wooden Brand Header
+        drawTopBrandBar(ctx, innerX + fw + 10, innerY + fw + 10, innerW - (fw + 10) * 2, headerH, 'wood');
+
+        // Framed Inner Photo Area
+        const photoTop = innerY + fw + headerH + 22;
+        const bottomBoxH = Math.max(240, panelH);
+        const photoH = Math.max(180, innerH - (photoTop - innerY) - bottomBoxH - fw - 18);
+        drawMainPhotoRegion(ctx, innerX + fw + 10, photoTop, innerW - (fw + 10) * 2, photoH, state.rPhoto);
+
+        // Inner Gold Trim around Photo
+        ctx.save();
+        drawRoundRect(ctx, innerX + fw + 10, photoTop, innerW - (fw + 10) * 2, photoH, state.rPhoto);
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.restore();
+
+        // Bottom Wooden / Dark Velvet Headline Panel
+        const boxX = innerX + fw + 10;
+        const boxY = innerY + innerH - bottomBoxH - fw - 8;
+        const boxW = innerW - (fw + 10) * 2;
+
+        ctx.save();
+        drawRoundRect(ctx, boxX, boxY, boxW, bottomBoxH, state.rPanel);
+        ctx.fillStyle = 'rgba(20, 12, 8, 0.72)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        ctx.restore();
+
+        drawCategoryBadge(ctx, innerX + innerW / 2, boxY);
+
+        const textMaxW = state.showQr && !state.qrCustomPos ? boxW - qrSize - 64 : boxW - 48;
+        const textCenterX = state.showQr && !state.qrCustomPos ? boxX + 24 + textMaxW / 2 : innerX + innerW / 2;
+        drawRichHeadline(ctx, state.headlineText, textCenterX, boxY + 38, textMaxW);
+
+        const defQrX = boxX + boxW - qrSize - 20;
+        const defQrY = state.showSponsor ? boxY + bottomBoxH - sponsorH - qrSize - 22 : boxY + bottomBoxH - qrSize - 20;
+        lastRenderedQRRect = drawQRWidget(ctx, defQrX, defQrY);
+
+        if (state.showSponsor) {
+          drawSponsorBanner(ctx, boxX + 16, boxY + bottomBoxH - sponsorH - 14, boxW - 32, sponsorH);
+        }
+      }
+
+      // ============================================================
+      // STYLE 3: EDITORIAL FADE
+      // ============================================================
+      else if (state.template === 'editorial-fade') {
+        drawTopBrandBar(ctx, innerX + 18, innerY + 18, innerW - 36, headerH, 'light');
+
+        const fadeStart = innerY + innerH * 0.38;
+        const rgb = hexToRgb(state.colTint);
+        const grad = ctx.createLinearGradient(0, fadeStart, 0, innerY + innerH);
+        grad.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+        grad.addColorStop(0.5, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.84)`);
+        grad.addColorStop(1, `rgba(${Math.max(0, rgb.r - 30)}, ${Math.max(0, rgb.g - 30)}, ${Math.max(0, rgb.b - 30)}, 0.98)`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(innerX, fadeStart, innerW, innerY + innerH - fadeStart);
+
+        const tagY = innerY + innerH - panelH - 20;
+        drawCategoryBadge(ctx, innerX + innerW / 2, tagY);
+
+        const textMaxW = state.showQr && !state.qrCustomPos ? innerW - qrSize - 84 : innerW - 72;
+        const textCenterX = state.showQr && !state.qrCustomPos ? innerX + 36 + textMaxW / 2 : innerX + innerW / 2;
+        drawRichHeadline(ctx, state.headlineText, textCenterX, tagY + 38, textMaxW);
+
+        const defQrX = innerX + innerW - qrSize - 32;
+        const defQrY = state.showSponsor ? innerY + innerH - sponsorH - qrSize - 30 : innerY + innerH - qrSize - 30;
+        lastRenderedQRRect = drawQRWidget(ctx, defQrX, defQrY);
+
+        if (state.showSponsor) {
+          drawSponsorBanner(ctx, innerX + 26, innerY + innerH - sponsorH - 20, innerW - 52, sponsorH);
+        }
+      }
+
+      // ============================================================
+      // STYLE 4: SPLIT CARD
+      // ============================================================
+      else if (state.template === 'split-card') {
+        const splitY = innerY + innerH - panelH;
+        drawMainPhotoRegion(ctx, innerX, innerY, innerW, splitY - innerY, 0);
+        drawTopBrandBar(ctx, innerX + 16, innerY + 16, innerW - 32, headerH, 'dark');
+
+        const rgb = hexToRgb(state.colTint);
+        ctx.fillStyle = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+        ctx.fillRect(innerX, splitY, innerW, panelH);
+
+        // Accent Divider Line
+        ctx.fillStyle = state.colHighlight;
+        ctx.fillRect(innerX, splitY - 4, innerW, 8);
+
+        drawCategoryBadge(ctx, innerX + innerW / 2, splitY);
+
+        const textMaxW = state.showQr && !state.qrCustomPos ? innerW - qrSize - 84 : innerW - 72;
+        const textCenterX = state.showQr && !state.qrCustomPos ? innerX + 36 + textMaxW / 2 : innerX + innerW / 2;
+        drawRichHeadline(ctx, state.headlineText, textCenterX, splitY + 42, textMaxW);
+
+        const defQrX = innerX + innerW - qrSize - 28;
+        const defQrY = state.showSponsor ? innerY + innerH - sponsorH - qrSize - 26 : innerY + innerH - qrSize - 26;
+        lastRenderedQRRect = drawQRWidget(ctx, defQrX, defQrY);
+
+        if (state.showSponsor) {
+          drawSponsorBanner(ctx, innerX + 24, innerY + innerH - sponsorH - 18, innerW - 48, sponsorH);
+        }
+      }
+
+      // ============================================================
+      // STYLE 5: MINIMALIST NEWSPRINT PAPER
+      // ============================================================
+      else if (state.template === 'minimal-paper') {
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(innerX, innerY, innerW, innerH);
+
+        drawTopBrandBar(ctx, innerX + 20, innerY + 16, innerW - 40, headerH, 'light');
+
+        const pPad = 30;
+        const photoTop = innerY + headerH + 28;
+        const photoH = Math.max(180, innerH - headerH - panelH - 54);
+        drawMainPhotoRegion(ctx, innerX + pPad, photoTop, innerW - pPad * 2, photoH, state.rPhoto);
+
+        drawCategoryBadge(ctx, innerX + pPad + 125, photoTop + photoH);
+
+        const headY = photoTop + photoH + 34;
+        const textMaxW = state.showQr && !state.qrCustomPos ? innerW - pPad * 2 - qrSize - 32 : innerW - pPad * 2 - 24;
+
+        ctx.fillStyle = state.colPrimary;
+        drawRoundRect(ctx, innerX + pPad, headY + 4, 8, Math.round(state.fontSize * 2.2), 4);
+        ctx.fill();
+
+        drawRichHeadline(ctx, state.headlineText, innerX + pPad + 24 + textMaxW / 2, headY, textMaxW, {
+          baseColor: '#0f172a',
+          accentColor: state.colPrimary,
+          align: 'left'
+        });
+
+        const defQrX = innerX + innerW - pPad - qrSize;
+        const defQrY = state.showSponsor ? innerY + innerH - sponsorH - qrSize - 28 : innerY + innerH - qrSize - 28;
+        lastRenderedQRRect = drawQRWidget(ctx, defQrX, defQrY);
+
+        if (state.showSponsor) {
+          drawSponsorBanner(ctx, innerX + pPad, innerY + innerH - sponsorH - 18, innerW - pPad * 2, sponsorH);
+        }
+      }
+
+      // ============================================================
+      // STYLE 6: NEON DARK GLASS
+      // ============================================================
+      else if (state.template === 'neon-dark') {
+        ctx.fillStyle = 'rgba(5, 9, 20, 0.62)';
+        ctx.fillRect(innerX, innerY, innerW, innerH);
+
+        drawTopBrandBar(ctx, innerX + 20, innerY + 18, innerW - 40, headerH, 'glass');
+
+        const pPad = 24;
+        const photoTop = innerY + headerH + 34;
+        const photoH = Math.max(180, innerH - headerH - panelH - 68);
+        drawMainPhotoRegion(ctx, innerX + pPad, photoTop, innerW - pPad * 2, photoH, state.rPhoto);
+
+        ctx.save();
+        drawRoundRect(ctx, innerX + pPad, photoTop, innerW - pPad * 2, photoH, state.rPhoto);
+        ctx.strokeStyle = state.colBorder;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.restore();
+
+        const boxY = innerY + innerH - panelH - 18;
+        drawLiquidGlassPanel(ctx, innerX + pPad, boxY, innerW - pPad * 2, panelH, state.rPanel, {
+          tintHex: '#090d16',
+          opacity: Math.max(0.55, state.glassOpacity / 100),
+          edgeColor: state.colBorder
+        });
+
+        drawCategoryBadge(ctx, innerX + innerW / 2, boxY);
+
+        const textMaxW = state.showQr && !state.qrCustomPos ? innerW - pPad * 2 - qrSize - 64 : innerW - pPad * 2 - 48;
+        const textCenterX = state.showQr && !state.qrCustomPos ? innerX + pPad + 24 + textMaxW / 2 : innerX + innerW / 2;
+        drawRichHeadline(ctx, state.headlineText, textCenterX, boxY + 38, textMaxW);
+
+        const defQrX = innerX + innerW - pPad - qrSize - 20;
+        const defQrY = state.showSponsor ? boxY + panelH - sponsorH - qrSize - 22 : boxY + panelH - qrSize - 20;
+        lastRenderedQRRect = drawQRWidget(ctx, defQrX, defQrY);
+
+        if (state.showSponsor) {
+          drawSponsorBanner(ctx, innerX + pPad + 16, boxY + panelH - sponsorH - 14, innerW - pPad * 2 - 32, sponsorH);
+        }
+      }
+
+      // ============================================================
+      // RENDER EXTRA OVERLAY PHOTOS / STICKERS / LOGOS
+      // ============================================================
+      state.overlayPhotos.forEach((ov, idx) => {
+        if (!ov.img) return;
+        const aspect = ov.img.height / ov.img.width;
+        const ow = ov.width;
+        const oh = ow * aspect;
+        const ox = ov.x - ow / 2;
+        const oy = ov.y - oh / 2;
+        const rad = (ov.radiusPct / 100) * Math.min(ow, oh);
+
+        ctx.save();
+        ctx.globalAlpha = ov.opacity / 100;
+        drawRoundRect(ctx, ox, oy, ow, oh, rad);
+        ctx.clip();
+        ctx.drawImage(ov.img, ox, oy, ow, oh);
+        ctx.restore();
+
+        if (ov.borderWidth > 0) {
+          ctx.save();
+          drawRoundRect(ctx, ox, oy, ow, oh, rad);
+          ctx.strokeStyle = ov.borderColor;
+          ctx.lineWidth = ov.borderWidth;
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Selection ring in editor mode
+        if (!forExport && state.selectedItem && state.selectedItem.type === 'overlay' && state.selectedItem.index === idx) {
+          ctx.save();
+          drawRoundRect(ctx, ox - 4, oy - 4, ow + 8, oh + 8, rad + 4);
+          ctx.strokeStyle = '#00f2ff';
+          ctx.setLineDash([8, 6]);
+          ctx.lineWidth = 3;
+          ctx.stroke();
+          ctx.restore();
+        }
+      });
+
+      // ============================================================
+      // RENDER CUSTOM FLOATING TEXT LAYERS
+      // ============================================================
+      state.customTexts.forEach((item, idx) => {
+        ctx.save();
+        const fStr = `${item.italic ? 'italic ' : ''}${item.fontWeight} ${item.size}px "${item.fontFamily}", "Hind Siliguri", sans-serif`;
+        ctx.font = fStr;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const tw = ctx.measureText(item.text).width + 36;
+        const th = item.size * 1.65;
+
+        if (item.hasPill) {
+          drawRoundRect(ctx, item.x - tw / 2, item.y - th / 2, tw, th, item.radius);
+          ctx.fillStyle = item.bgColor;
+          ctx.fill();
+        }
+
+        ctx.shadowColor = 'rgba(0,0,0,0.6)';
+        ctx.shadowBlur = 8;
+        ctx.fillStyle = item.color;
+        ctx.fillText(item.text, item.x, item.y + 1);
+        ctx.restore();
+
+        // Selection outline in editor mode
+        if (!forExport && state.selectedItem && state.selectedItem.type === 'text' && state.selectedItem.index === idx) {
+          ctx.save();
+          drawRoundRect(ctx, item.x - tw / 2 - 4, item.y - th / 2 - 4, tw + 8, th + 8, item.radius + 4);
+          ctx.strokeStyle = '#00f2ff';
+          ctx.setLineDash([6, 5]);
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+          ctx.restore();
+        }
+      });
+
+      // QR Selection Outline
+      if (!forExport && lastRenderedQRRect && state.selectedItem && state.selectedItem.type === 'qr') {
+        ctx.save();
+        drawRoundRect(ctx, lastRenderedQRRect.x - 4, lastRenderedQRRect.y - 4, lastRenderedQRRect.w + 8, lastRenderedQRRect.h + 8, state.rSponsor + 4);
+        ctx.strokeStyle = '#00f2ff';
+        ctx.setLineDash([6, 5]);
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      ctx.restore(); // End inner card clip
+
+      // Outer Card Border
+      if (state.borderWidth > 0) {
+        ctx.save();
+        drawRoundRect(ctx, innerX + state.borderWidth / 2, innerY + state.borderWidth / 2, innerW - state.borderWidth, innerH - state.borderWidth, state.rOuter);
+        ctx.strokeStyle = state.colBorder;
+        ctx.lineWidth = state.borderWidth;
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    /**
+     * Multi-Photo Overlay Controls Renderer
+     */
+    function renderOverlayPhotoControls() {
+      const list = document.getElementById('overlay-photos-list');
+      list.innerHTML = '';
+
+      if (state.overlayPhotos.length === 0) {
+        list.innerHTML = `<div class="text-center py-4 text-[11px] text-slate-500 border border-dashed border-white/10 rounded-2xl">No extra overlay photos yet. Click "+ Add Photo" to insert reporter portraits, logos, or secondary photos.</div>`;
+        return;
+      }
+
+      state.overlayPhotos.forEach((ov, idx) => {
+        const card = document.createElement('div');
+        card.className = 'p-3 rounded-2xl bg-white/5 border border-white/10 space-y-2.5';
+        card.innerHTML = `
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <img src="${ov.src}" class="w-8 h-8 rounded-lg object-cover border border-white/20" />
+              <span class="text-xs font-bold text-white">Overlay Photo #${idx + 1}</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <button type="button" data-idx="${idx}" class="ov-up p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-300" title="Bring Forward"><i data-lucide="arrow-up" class="w-3.5 h-3.5"></i></button>
+              <button type="button" data-idx="${idx}" class="ov-down p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-300" title="Send Backward"><i data-lucide="arrow-down" class="w-3.5 h-3.5"></i></button>
+              <button type="button" data-idx="${idx}" class="ov-del p-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300" title="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] text-slate-400">
+            <div>
+              <span>Size: ${ov.width}px</span>
+              <input type="range" min="60" max="650" value="${ov.width}" data-idx="${idx}" class="ov-size w-full mt-1" />
+            </div>
+            <div>
+              <span>Round: ${ov.radiusPct}%</span>
+              <input type="range" min="0" max="50" value="${ov.radiusPct}" data-idx="${idx}" class="ov-rad w-full mt-1" />
+            </div>
+            <div>
+              <span>Opacity: ${ov.opacity}%</span>
+              <input type="range" min="10" max="100" value="${ov.opacity}" data-idx="${idx}" class="ov-op w-full mt-1" />
+            </div>
+            <div class="flex items-center gap-1.5 pt-2">
+              <span>Border:</span>
+              <input type="number" min="0" max="20" value="${ov.borderWidth}" data-idx="${idx}" class="ov-bw w-11 bg-slate-950 border border-white/15 rounded px-1 py-0.5 text-white" />
+              <input type="color" value="${ov.borderColor}" data-idx="${idx}" class="ov-bc w-6 h-6 rounded bg-transparent cursor-pointer" />
+            </div>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      lucide.createIcons();
+
+      list.querySelectorAll('.ov-size').forEach(el => el.addEventListener('input', e => {
+        state.overlayPhotos[e.target.dataset.idx].width = parseInt(e.target.value, 10);
+        renderOverlayPhotoControls();
+        renderCard();
+      }));
+      list.querySelectorAll('.ov-rad').forEach(el => el.addEventListener('input', e => {
+        state.overlayPhotos[e.target.dataset.idx].radiusPct = parseInt(e.target.value, 10);
+        renderCard();
+      }));
+      list.querySelectorAll('.ov-op').forEach(el => el.addEventListener('input', e => {
+        state.overlayPhotos[e.target.dataset.idx].opacity = parseInt(e.target.value, 10);
+        renderCard();
+      }));
+      list.querySelectorAll('.ov-bw').forEach(el => el.addEventListener('input', e => {
+        state.overlayPhotos[e.target.dataset.idx].borderWidth = parseInt(e.target.value, 10) || 0;
+        renderCard();
+      }));
+      list.querySelectorAll('.ov-bc').forEach(el => el.addEventListener('input', e => {
+        state.overlayPhotos[e.target.dataset.idx].borderColor = e.target.value;
+        renderCard();
+      }));
+      list.querySelectorAll('.ov-up').forEach(el => el.addEventListener('click', e => {
+        const i = parseInt(e.currentTarget.dataset.idx, 10);
+        if (i < state.overlayPhotos.length - 1) {
+          [state.overlayPhotos[i], state.overlayPhotos[i + 1]] = [state.overlayPhotos[i + 1], state.overlayPhotos[i]];
+          renderOverlayPhotoControls();
+          renderCard();
+        }
+      }));
+      list.querySelectorAll('.ov-down').forEach(el => el.addEventListener('click', e => {
+        const i = parseInt(e.currentTarget.dataset.idx, 10);
+        if (i > 0) {
+          [state.overlayPhotos[i], state.overlayPhotos[i - 1]] = [state.overlayPhotos[i - 1], state.overlayPhotos[i]];
+          renderOverlayPhotoControls();
+          renderCard();
+        }
+      }));
+      list.querySelectorAll('.ov-del').forEach(el => el.addEventListener('click', e => {
+        const i = parseInt(e.currentTarget.dataset.idx, 10);
+        state.overlayPhotos.splice(i, 1);
+        state.selectedItem = null;
+        renderOverlayPhotoControls();
+        renderCard();
+      }));
+    }
+
+    /**
+     * Custom Floating Text Controls Renderer
+     */
+    function renderCustomTextControls() {
+      const list = document.getElementById('custom-text-list');
+      list.innerHTML = '';
+
+      if (state.customTexts.length === 0) {
+        list.innerHTML = `<div class="text-center py-3 text-[11px] text-slate-500 border border-dashed border-white/10 rounded-2xl">No extra floating texts yet.</div>`;
+        return;
+      }
+
+      state.customTexts.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'p-3 rounded-2xl bg-white/5 border border-white/10 space-y-2';
+        div.innerHTML = `
+          <div class="flex items-center gap-1.5">
+            <input type="text" value="${item.text}" data-idx="${idx}" class="ct-text flex-1 bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs font-bangla text-white" />
+            <input type="color" value="${item.color}" data-idx="${idx}" title="Text Color" class="ct-col w-7 h-7 rounded bg-transparent cursor-pointer" />
+            <input type="color" value="${item.bgColor}" data-idx="${idx}" title="Pill BG Color" class="ct-bg w-7 h-7 rounded bg-transparent cursor-pointer" />
+            <button type="button" data-idx="${idx}" class="ct-del p-1.5 rounded-lg bg-red-500/20 text-red-300"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-[10px] text-slate-300">
+            <select data-idx="${idx}" class="ct-font bg-slate-950 border border-white/15 rounded-lg px-1.5 py-1">
+              <option value="Hind Siliguri" ${item.fontFamily === 'Hind Siliguri' ? 'selected' : ''}>Hind Siliguri</option>
+              <option value="Noto Sans Bengali" ${item.fontFamily === 'Noto Sans Bengali' ? 'selected' : ''}>Noto Sans</option>
+              <option value="Galada" ${item.fontFamily === 'Galada' ? 'selected' : ''}>Galada</option>
+              <option value="Poppins" ${item.fontFamily === 'Poppins' ? 'selected' : ''}>Poppins</option>
+            </select>
+            <select data-idx="${idx}" class="ct-weight bg-slate-950 border border-white/15 rounded-lg px-1.5 py-1">
+              <option value="400" ${item.fontWeight === '400' ? 'selected' : ''}>Regular</option>
+              <option value="600" ${item.fontWeight === '600' ? 'selected' : ''}>SemiBold</option>
+              <option value="700" ${item.fontWeight === '700' ? 'selected' : ''}>Bold</option>
+              <option value="900" ${item.fontWeight === '900' ? 'selected' : ''}>Black</option>
+            </select>
+            <div class="flex items-center gap-1.5">
+              <label class="inline-flex items-center gap-1 cursor-pointer">
+                <input type="checkbox" ${item.hasPill ? 'checked' : ''} data-idx="${idx}" class="ct-pill accent-cyan-400" />
+                <span>Pill</span>
+              </label>
+              <input type="range" min="18" max="76" value="${item.size}" data-idx="${idx}" class="ct-size w-14" />
+            </div>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+
+      lucide.createIcons();
+
+      list.querySelectorAll('.ct-text').forEach(el => el.addEventListener('input', e => {
+        state.customTexts[e.target.dataset.idx].text = e.target.value; renderCard();
+      }));
+      list.querySelectorAll('.ct-col').forEach(el => el.addEventListener('input', e => {
+        state.customTexts[e.target.dataset.idx].color = e.target.value; renderCard();
+      }));
+      list.querySelectorAll('.ct-bg').forEach(el => el.addEventListener('input', e => {
+        state.customTexts[e.target.dataset.idx].bgColor = e.target.value; renderCard();
+      }));
+      list.querySelectorAll('.ct-font').forEach(el => el.addEventListener('change', e => {
+        state.customTexts[e.target.dataset.idx].fontFamily = e.target.value; renderCard();
+      }));
+      list.querySelectorAll('.ct-weight').forEach(el => el.addEventListener('change', e => {
+        state.customTexts[e.target.dataset.idx].fontWeight = e.target.value; renderCard();
+      }));
+      list.querySelectorAll('.ct-pill').forEach(el => el.addEventListener('change', e => {
+        state.customTexts[e.target.dataset.idx].hasPill = e.target.checked; renderCard();
+      }));
+      list.querySelectorAll('.ct-size').forEach(el => el.addEventListener('input', e => {
+        state.customTexts[e.target.dataset.idx].size = parseInt(e.target.value, 10); renderCard();
+      }));
+      list.querySelectorAll('.ct-del').forEach(el => el.addEventListener('click', e => {
+        state.customTexts.splice(parseInt(e.currentTarget.dataset.idx, 10), 1);
+        state.selectedItem = null;
+        renderCustomTextControls();
+        renderCard();
+      }));
+    }
+
+    /**
+     * Interactive Drag & Drop Hit-Testing on Canvas
+     */
+    let isDragging = false;
+    let lastPtr = { x: 0, y: 0 };
+
+    function getCanvasPoint(e) {
+      const rect = canvas.getBoundingClientRect();
+      const cx = e.touches ? e.touches[0].clientX : e.clientX;
+      const cy = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: ((cx - rect.left) / rect.width) * state.width,
+        y: ((cy - rect.top) / rect.height) * state.height
+      };
+    }
+
+    function onPointerDown(e) {
+      const pt = getCanvasPoint(e);
+      lastPtr = pt;
+      isDragging = true;
+
+      // 1. Check Custom Floating Text Layers (topmost first)
+      for (let i = state.customTexts.length - 1; i >= 0; i--) {
+        const t = state.customTexts[i];
+        if (Math.abs(pt.x - t.x) < 150 && Math.abs(pt.y - t.y) < 45) {
+          state.selectedItem = { type: 'text', index: i };
+          document.getElementById('selected-layer-badge').textContent = `Layer: Text #${i + 1}`;
+          renderCard();
+          return;
+        }
+      }
+
+      // 2. Check Extra Overlay Photos (topmost first)
+      for (let i = state.overlayPhotos.length - 1; i >= 0; i--) {
+        const ov = state.overlayPhotos[i];
+        if (!ov.img) continue;
+        const oh = ov.width * (ov.img.height / ov.img.width);
+        if (Math.abs(pt.x - ov.x) <= ov.width / 2 && Math.abs(pt.y - ov.y) <= oh / 2) {
+          state.selectedItem = { type: 'overlay', index: i };
+          document.getElementById('selected-layer-badge').textContent = `Layer: Overlay Photo #${i + 1}`;
+          renderCard();
+          return;
+        }
+      }
+
+      // 3. Check QR Code Widget
+      if (state.showQr && lastRenderedQRRect) {
+        const q = lastRenderedQRRect;
+        if (pt.x >= q.x && pt.x <= q.x + q.w && pt.y >= q.y && pt.y <= q.y + q.h) {
+          if (!state.qrCustomPos) state.qrCustomPos = { x: q.x, y: q.y };
+          state.selectedItem = { type: 'qr' };
+          document.getElementById('selected-layer-badge').textContent = 'Layer: QR Code';
+          renderCard();
+          return;
+        }
+      }
+
+      // 4. Default: Pan Main Background Photo
+      state.selectedItem = { type: 'photo' };
+      document.getElementById('selected-layer-badge').textContent = 'Layer: Main Photo';
+      renderCard();
+    }
+
+    function onPointerMove(e) {
+      if (!isDragging || !state.selectedItem) return;
+      e.preventDefault();
+      const pt = getCanvasPoint(e);
+      const dx = pt.x - lastPtr.x;
+      const dy = pt.y - lastPtr.y;
+      lastPtr = pt;
+
+      if (state.selectedItem.type === 'text') {
+        const item = state.customTexts[state.selectedItem.index];
+        if (item) { item.x += dx; item.y += dy; }
+      } else if (state.selectedItem.type === 'overlay') {
+        const ov = state.overlayPhotos[state.selectedItem.index];
+        if (ov) { ov.x += dx; ov.y += dy; }
+      } else if (state.selectedItem.type === 'qr' && state.qrCustomPos) {
+        state.qrCustomPos.x += dx;
+        state.qrCustomPos.y += dy;
+      } else if (state.selectedItem.type === 'photo') {
+        state.photoX = Math.max(-500, Math.min(500, Math.round(state.photoX + dx)));
+        state.photoY = Math.max(-500, Math.min(500, Math.round(state.photoY + dy)));
+        document.getElementById('photo-x').value = state.photoX;
+        document.getElementById('photo-y').value = state.photoY;
+        document.getElementById('val-photo-x').textContent = state.photoX;
+        document.getElementById('val-photo-y').textContent = state.photoY;
+      }
+      renderCard();
+    }
+
+    function onPointerUp() {
+      isDragging = false;
+    }
+
+    canvas.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+    canvas.addEventListener('touchstart', onPointerDown, { passive: false });
+    window.addEventListener('touchmove', onPointerMove, { passive: false });
+    window.addEventListener('touchend', onPointerUp);
+
+    /**
+     * Helper to Add an Overlay Image File
+     */
+    function handleAddOverlayImageFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+          state.overlayPhotos.push({
+            id: Date.now(),
+            img,
+            src: ev.target.result,
+            x: state.width * 0.25,
+            y: state.height * 0.35,
+            width: Math.round(state.width * 0.24),
+            radiusPct: 16,
+            borderWidth: 4,
+            borderColor: '#ffffff',
+            opacity: 100
+          });
+          state.selectedItem = { type: 'overlay', index: state.overlayPhotos.length - 1 };
+          renderOverlayPhotoControls();
+          renderCard();
+          showToast('Overlay photo added! Drag to move.');
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /**
+     * Toast & Export Helpers
+     */
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      t.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => t.classList.add('translate-y-24', 'opacity-0'), 2600);
+    }
+
+    function exportCard(format) {
+      renderCard(true); // Render clean without selection outlines
+      const mime = format === 'jpg' ? 'image/jpeg' : 'image/png';
+      const url = canvas.toDataURL(mime, 0.95);
+      const a = document.createElement('a');
+      a.download = `haragach-pratidin-${Date.now()}.${format}`;
+      a.href = url;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      renderCard(false);
+      showToast(`Exported ${format.toUpperCase()} (${state.width}×${state.height}px)`);
+    }
+
+    /**
+     * Save & Load Template Settings to localStorage
+     */
+    document.getElementById('btn-save-project').addEventListener('click', () => {
+      try {
+        const saveObj = { ...state };
+        delete saveObj.photoImg;
+        delete saveObj.logoImg;
+        delete saveObj.qrImg;
+        saveObj.overlayPhotos = state.overlayPhotos.map(o => ({ ...o, img: null }));
+        localStorage.setItem('haragach_card_template_v1', JSON.stringify(saveObj));
+        showToast('Template saved to browser storage!');
+      } catch (e) {
+        showToast('Could not save large images to localStorage.');
+      }
+    });
+
+    document.getElementById('btn-load-project').addEventListener('click', () => {
+      try {
+        const raw = localStorage.getItem('haragach_card_template_v1');
+        if (!raw) { showToast('No saved template found.'); return; }
+        const loaded = JSON.parse(raw);
+        Object.assign(state, loaded);
+        syncUIFromState();
+        buildQRMatrixImage(state.qrUrl, state.qrFg, state.qrBg);
+        renderCustomTextControls();
+        renderCard();
+        showToast('Saved template restored!');
+      } catch (e) {
+        showToast('Failed to load saved template.');
+      }
+    });
+
+    /**
+     * Sync UI Controls with Current State
+     */
+    function syncUIFromState() {
+      document.getElementById('glass-opacity').value = state.glassOpacity;
+      document.getElementById('val-glass-opacity').textContent = `${state.glassOpacity}%`;
+      document.getElementById('glass-blur').value = state.glassBlur;
+      document.getElementById('val-glass-blur').textContent = `${state.glassBlur}px`;
+      document.getElementById('glass-sheen').value = state.glassSheen;
+      document.getElementById('val-glass-sheen').textContent = `${state.glassSheen}%`;
+      document.getElementById('glass-edge').value = state.glassEdge;
+      document.getElementById('val-glass-edge').textContent = `${state.glassEdge}px`;
+      document.getElementById('panel-ratio').value = state.panelRatio;
+      document.getElementById('val-panel-ratio').textContent = `${state.panelRatio}%`;
+
+      document.getElementById('r-outer').value = state.rOuter;
+      document.getElementById('val-r-outer').textContent = `${state.rOuter}px`;
+      document.getElementById('r-photo').value = state.rPhoto;
+      document.getElementById('val-r-photo').textContent = `${state.rPhoto}px`;
+      document.getElementById('r-panel').value = state.rPanel;
+      document.getElementById('val-r-panel').textContent = `${state.rPanel}px`;
+      document.getElementById('r-badge').value = state.rBadge;
+      document.getElementById('val-r-badge').textContent = `${state.rBadge}px`;
+      document.getElementById('r-sponsor').value = state.rSponsor;
+      document.getElementById('val-r-sponsor').textContent = `${state.rSponsor}px`;
+
+      document.getElementById('col-tint').value = state.colTint;
+      document.getElementById('hex-tint').textContent = state.colTint;
+      document.getElementById('col-primary').value = state.colPrimary;
+      document.getElementById('hex-primary').textContent = state.colPrimary;
+      document.getElementById('col-text').value = state.colText;
+      document.getElementById('hex-text').textContent = state.colText;
+      document.getElementById('col-highlight').value = state.colHighlight;
+      document.getElementById('hex-highlight').textContent = state.colHighlight;
+      document.getElementById('col-border').value = state.colBorder;
+      document.getElementById('hex-border').textContent = state.colBorder;
+      document.getElementById('col-sponsor-bg').value = state.colSponsorBg;
+      document.getElementById('hex-sponsor-bg').textContent = state.colSponsorBg;
+
+      document.querySelectorAll('.template-card').forEach(c => {
+        const active = c.dataset.template === state.template;
+        c.classList.toggle('active', active);
+        c.classList.toggle('border-2', active);
+        c.classList.toggle('border-cyan-400', active);
+        c.classList.toggle('bg-cyan-400/10', active);
+      });
+    }
+
+    /**
+     * Wire Up All Event Listeners
+     */
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.classList.remove('active', 'bg-cyan-400', 'text-slate-950', 'font-bold');
+          b.classList.add('text-slate-300', 'font-medium');
+        });
+        btn.classList.add('active', 'bg-cyan-400', 'text-slate-950', 'font-bold');
+        btn.classList.remove('text-slate-300', 'font-medium');
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+        document.getElementById(`panel-${btn.dataset.tab}`).classList.remove('hidden');
+      });
+    });
+
+    // Templates
+    document.querySelectorAll('.template-card').forEach(card => {
+      card.addEventListener('click', () => {
+        state.template = card.dataset.template;
+        syncUIFromState();
+        renderCard();
+      });
+    });
+
+    // Material & Physics Sliders
+    const bindRange = (id, key, unit, valId) => {
+      document.getElementById(id).addEventListener('input', e => {
+        state[key] = parseFloat(e.target.value);
+        if (valId) document.getElementById(valId).textContent = `${state[key]}${unit}`;
+        renderCard();
+      });
+    };
+    bindRange('glass-opacity', 'glassOpacity', '%', 'val-glass-opacity');
+    bindRange('glass-blur', 'glassBlur', 'px', 'val-glass-blur');
+    bindRange('glass-sheen', 'glassSheen', '%', 'val-glass-sheen');
+    bindRange('glass-edge', 'glassEdge', 'px', 'val-glass-edge');
+    bindRange('panel-ratio', 'panelRatio', '%', 'val-panel-ratio');
+    bindRange('wood-grain', 'woodGrain', '%', 'val-wood-grain');
+    bindRange('wood-gloss', 'woodGloss', '%', 'val-wood-gloss');
+    bindRange('wood-frame', 'woodFrame', 'px', 'val-wood-frame');
+    bindRange('outer-pad', 'outerPad', 'px', 'val-outer-pad');
+    bindRange('border-width', 'borderWidth', 'px', 'val-border-width');
+    bindRange('shadow-intensity', 'shadowIntensity', '%', 'val-shadow-intensity');
+
+    document.getElementById('glass-wave').addEventListener('change', e => { state.glassWave = e.target.checked; renderCard(); });
+
+    // Wood Tones
+    document.querySelectorAll('.wood-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.wood-btn').forEach(b => b.classList.remove('border-2', 'border-amber-400'));
+        btn.classList.add('border-2', 'border-amber-400');
+        state.woodTone = btn.dataset.wood;
+        state.template = 'wooden';
+        syncUIFromState();
+        renderCard();
+      });
+    });
+
+    // Corner Radius Sliders (Independent & Linked)
+    const cornerMap = [
+      ['r-outer', 'rOuter', 'val-r-outer'],
+      ['r-photo', 'rPhoto', 'val-r-photo'],
+      ['r-panel', 'rPanel', 'val-r-panel'],
+      ['r-badge', 'rBadge', 'val-r-badge'],
+      ['r-sponsor', 'rSponsor', 'val-r-sponsor']
+    ];
+    cornerMap.forEach(([id, key, valId]) => {
+      document.getElementById(id).addEventListener('input', e => {
+        const v = parseInt(e.target.value, 10);
+        if (document.getElementById('link-corners').checked) {
+          cornerMap.forEach(([cid, ckey, cval]) => {
+            state[ckey] = v;
+            document.getElementById(cid).value = v;
+            document.getElementById(cval).textContent = `${v}px`;
+          });
+        } else {
+          state[key] = v;
+          document.getElementById(valId).textContent = `${v}px`;
+        }
+        renderCard();
+      });
+    });
+
+    // Aspect Ratio & Custom Dimensions
+    function updateCanvasSize(w, h, label) {
+      state.width = w;
+      state.height = h;
+      state.ratioLabel = label;
+      state.qrCustomPos = null; // Re-anchor QR cleanly on resize
+      document.getElementById('custom-width').value = w;
+      document.getElementById('custom-height').value = h;
+      renderCard();
+    }
+
+    document.querySelectorAll('.ratio-preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.ratio-preset-btn').forEach(b => b.classList.remove('border-2', 'border-cyan-400', 'bg-cyan-400/10'));
+        btn.classList.add('border-2', 'border-cyan-400', 'bg-cyan-400/10');
+        updateCanvasSize(parseInt(btn.dataset.w, 10), parseInt(btn.dataset.h, 10), btn.dataset.label);
+      });
+    });
+
+    document.querySelectorAll('.quick-ratio-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const map = { '4:5': [1080, 1350], '1:1': [1080, 1080], '9:16': [1080, 1920], '16:9': [1920, 1080] };
+        const [w, h] = map[btn.dataset.quickRatio];
+        document.querySelectorAll('.quick-ratio-btn').forEach(b => {
+          b.classList.toggle('bg-cyan-400', b === btn);
+          b.classList.toggle('text-slate-950', b === btn);
+          b.classList.toggle('font-bold', b === btn);
+        });
+        updateCanvasSize(w, h, btn.dataset.quickRatio);
+      });
+    });
+
+    document.getElementById('custom-width').addEventListener('change', e => {
+      const w = Math.max(400, Math.min(2400, parseInt(e.target.value, 10) || 1080));
+      updateCanvasSize(w, state.height, 'Custom');
+    });
+    document.getElementById('custom-height').addEventListener('change', e => {
+      const h = Math.max(400, Math.min(2400, parseInt(e.target.value, 10) || 1350));
+      updateCanvasSize(state.width, h, 'Custom');
+    });
+
+    // Main Photo & Overlay Photos
+    document.getElementById('quick-photo-upload').addEventListener('change', e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = ev => {
+        const img = new Image();
+        img.onload = () => { state.photoImg = img; renderCard(); showToast('Main photo updated!'); };
+        img.src = ev.target.result;
+      };
+      r.readAsDataURL(f);
+    });
+
+    document.getElementById('quick-overlay-upload').addEventListener('change', e => handleAddOverlayImageFile(e.target.files[0]));
+    document.getElementById('add-overlay-photo-input').addEventListener('change', e => handleAddOverlayImageFile(e.target.files[0]));
+
+    bindRange('photo-zoom', 'photoZoom', '%', 'val-photo-zoom');
+    bindRange('photo-x', 'photoX', '', 'val-photo-x');
+    bindRange('photo-y', 'photoY', '', 'val-photo-y');
+    bindRange('photo-bright', 'photoBright', '%', 'val-photo-bright');
+    bindRange('photo-contrast', 'photoContrast', '%', 'val-photo-contrast');
+    bindRange('photo-sat', 'photoSat', '%', 'val-photo-sat');
+
+    document.getElementById('btn-reset-main-photo').addEventListener('click', () => {
+      state.photoZoom = 100; state.photoX = 0; state.photoY = 0;
+      state.photoBright = 100; state.photoContrast = 105; state.photoSat = 105;
+      renderCard();
+    });
+
+    // QR Code & Branding
+    document.getElementById('show-qr').addEventListener('change', e => { state.showQr = e.target.checked; renderCard(); });
+    document.getElementById('qr-url').addEventListener('input', e => {
+      state.qrUrl = e.target.value;
+      buildQRMatrixImage(state.qrUrl, state.qrFg, state.qrBg);
+    });
+    document.getElementById('upload-custom-qr').addEventListener('change', e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = ev => {
+        const img = new Image();
+        img.onload = () => { state.qrImg = img; state.showQr = true; renderCard(); showToast('Custom QR uploaded!'); };
+        img.src = ev.target.result;
+      };
+      r.readAsDataURL(f);
+    });
+    bindRange('qr-size', 'qrSize', 'px', 'val-qr-size');
+    bindRange('qr-pad', 'qrPad', 'px', 'val-qr-pad');
+    document.getElementById('qr-fg').addEventListener('input', e => {
+      state.qrFg = e.target.value;
+      buildQRMatrixImage(state.qrUrl, state.qrFg, state.qrBg);
+    });
+    document.getElementById('qr-bg').addEventListener('input', e => {
+      state.qrBg = e.target.value;
+      buildQRMatrixImage(state.qrUrl, state.qrFg, state.qrBg);
+    });
+
+    document.getElementById('brand-name').addEventListener('input', e => { state.brandName = e.target.value; renderCard(); });
+    document.getElementById('brand-tagline').addEventListener('input', e => { state.brandTagline = e.target.value; renderCard(); });
+    document.getElementById('date-text').addEventListener('input', e => { state.dateText = e.target.value; renderCard(); });
+    document.getElementById('btn-today-bangla').addEventListener('click', () => {
+      const bnD = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+      const bnM = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+      const toBn = n => String(n).split('').map(d => bnD[d] || d).join('');
+      const d = new Date();
+      state.dateText = `${toBn(d.getDate())} ${bnM[d.getMonth()]}, ${toBn(d.getFullYear())}`;
+      document.getElementById('date-text').value = state.dateText;
+      renderCard();
+    });
+    document.getElementById('logo-upload').addEventListener('change', e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = ev => {
+        const img = new Image();
+        img.onload = () => { state.logoImg = img; renderCard(); showToast('Page logo added!'); };
+        img.src = ev.target.result;
+      };
+      r.readAsDataURL(f);
+    });
+
+    document.getElementById('show-sponsor').addEventListener('change', e => { state.showSponsor = e.target.checked; renderCard(); });
+    document.getElementById('sponsor-title').addEventListener('input', e => { state.sponsorTitle = e.target.value; renderCard(); });
+    document.getElementById('sponsor-sub').addEventListener('input', e => { state.sponsorSub = e.target.value; renderCard(); });
+
+    // Typography & Fonts
+    document.getElementById('show-tag').addEventListener('change', e => { state.showTag = e.target.checked; renderCard(); });
+    document.getElementById('tag-text').addEventListener('input', e => { state.tagText = e.target.value; renderCard(); });
+    document.querySelectorAll('.preset-tag').forEach(b => b.addEventListener('click', () => {
+      state.tagText = b.dataset.tag;
+      document.getElementById('tag-text').value = state.tagText;
+      renderCard();
+    }));
+    document.getElementById('headline-text').addEventListener('input', e => { state.headlineText = e.target.value; renderCard(); });
+    document.getElementById('highlight-words').addEventListener('input', e => { state.highlightWords = e.target.value; renderCard(); });
+    document.getElementById('font-family').addEventListener('change', e => { state.fontFamily = e.target.value; renderCard(); });
+    document.getElementById('font-weight').addEventListener('change', e => { state.fontWeight = e.target.value; renderCard(); });
+    document.getElementById('btn-font-italic').addEventListener('click', e => {
+      state.fontItalic = !state.fontItalic;
+      e.currentTarget.classList.toggle('bg-cyan-400', state.fontItalic);
+      e.currentTarget.classList.toggle('text-slate-950', state.fontItalic);
+      renderCard();
+    });
+    document.querySelectorAll('.align-btn').forEach(btn => btn.addEventListener('click', () => {
+      document.querySelectorAll('.align-btn').forEach(b => { b.classList.remove('bg-cyan-400', 'text-slate-950'); b.classList.add('bg-white/5', 'text-slate-400'); });
+      btn.classList.add('bg-cyan-400', 'text-slate-950');
+      state.textAlign = btn.dataset.align;
+      renderCard();
+    }));
+
+    bindRange('font-size', 'fontSize', 'px', 'val-font-size');
+    bindRange('line-height', 'lineHeight', '', 'val-line-height');
+    bindRange('letter-spacing', 'letterSpacing', 'px', 'val-letter-spacing');
+    bindRange('text-stroke', 'textStroke', 'px', 'val-text-stroke');
+
+    document.getElementById('btn-add-custom-text').addEventListener('click', () => {
+      state.customTexts.push({
+        id: Date.now(),
+        text: 'হারাগাছ, রংপুর',
+        x: state.width / 2,
+        y: state.height * 0.42,
+        size: 32,
+        fontFamily: 'Hind Siliguri',
+        fontWeight: '700',
+        italic: false,
+        color: '#ffffff',
+        bgColor: '#000000',
+        hasPill: true,
+        radius: 50
+      });
+      renderCustomTextControls();
+      renderCard();
+    });
+
+    // Color Studio & 1-Click Presets
+    const bindColor = (id, key, hexId) => {
+      document.getElementById(id).addEventListener('input', e => {
+        state[key] = e.target.value;
+        document.getElementById(hexId).textContent = e.target.value;
+        renderCard();
+      });
+    };
+    bindColor('col-tint', 'colTint', 'hex-tint');
+    bindColor('col-primary', 'colPrimary', 'hex-primary');
+    bindColor('col-text', 'colText', 'hex-text');
+    bindColor('col-highlight', 'colHighlight', 'hex-highlight');
+    bindColor('col-border', 'colBorder', 'hex-border');
+    bindColor('col-sponsor-bg', 'colSponsorBg', 'hex-sponsor-bg');
+
+    document.querySelectorAll('.theme-preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const p = btn.dataset.preset;
+        if (p === 'haragach-glass') {
+          Object.assign(state, { template: 'liquid-glass', colTint: '#5c1418', colPrimary: '#b91c1c', colText: '#ffffff', colHighlight: '#fbbf24', colBorder: '#ffffff', glassOpacity: 48 });
+        } else if (p === 'royal-wood') {
+          Object.assign(state, { template: 'wooden', woodTone: 'teak', colPrimary: '#991b1b', colText: '#fef3c7', colHighlight: '#fbbf24', colBorder: '#d97706' });
+        } else if (p === 'cyber-cyan') {
+          Object.assign(state, { template: 'neon-dark', colTint: '#090d16', colPrimary: '#0284c7', colText: '#f8fafc', colHighlight: '#00f2ff', colBorder: '#00f2ff', glassOpacity: 72 });
+        } else if (p === 'classic-paper') {
+          Object.assign(state, { template: 'minimal-paper', colPrimary: '#b91c1c', colText: '#0f172a', colHighlight: '#b91c1c', colBorder: '#e2e8f0' });
+        } else if (p === 'midnight-gold') {
+          Object.assign(state, { template: 'split-card', colTint: '#0f172a', colPrimary: '#b91c1c', colText: '#ffffff', colHighlight: '#fbbf24', colBorder: '#fbbf24' });
+        }
+        syncUIFromState();
+        renderCard();
+        showToast('Theme preset applied!');
+      });
+    });
+
+    document.getElementById('btn-deselect').addEventListener('click', () => {
+      state.selectedItem = null;
+      document.getElementById('selected-layer-badge').textContent = 'Layer: None';
+      renderCard();
+    });
+
+    document.getElementById('btn-download-png').addEventListener('click', () => exportCard('png'));
+    document.getElementById('btn-download-jpg').addEventListener('click', () => exportCard('jpg'));
+
+    // Initialize Application
+    window.addEventListener('load', () => {
+      renderOverlayPhotoControls();
+      renderCustomTextControls();
+      createDefaultNewsPhoto();
+      buildQRMatrixImage(state.qrUrl, state.qrFg, state.qrBg);
+      document.fonts.ready.then(() => renderCard());
+    });
+  </script>
+</body>
+</html>
